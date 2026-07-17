@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../core/legal/legal_content.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_widgets.dart';
+import '../legal/about_screen.dart';
+import '../legal/help_screen.dart';
+import '../legal/legal_document_screen.dart';
 import '../auth/auth_provider.dart';
 import '../advertising/advertising_screens.dart';
 import '../catalog/catalog_screens.dart';
@@ -188,6 +192,52 @@ class MenuHubScreen extends ConsumerWidget {
           onPressed: () => ref.read(authProvider.notifier).logout(),
           icon: const Icon(Icons.logout),
           label: const Text('Sign out'),
+        ),
+        const SizedBox(height: 8),
+        _Section(
+          title: 'Legal & support',
+          children: [
+            _MenuTile(
+              icon: Icons.help_outline,
+              title: 'Help & FAQ',
+              subtitle: 'Connection tips and support contacts',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const HelpScreen()),
+              ),
+            ),
+            _MenuTile(
+              icon: Icons.privacy_tip_outlined,
+              title: 'Privacy policy',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const LegalDocumentScreen(
+                    title: 'Privacy policy',
+                    body: LegalContent.privacyPolicy,
+                  ),
+                ),
+              ),
+            ),
+            _MenuTile(
+              icon: Icons.description_outlined,
+              title: 'Terms of service',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const LegalDocumentScreen(
+                    title: 'Terms of service',
+                    body: LegalContent.termsOfService,
+                  ),
+                ),
+              ),
+            ),
+            _MenuTile(
+              icon: Icons.info_outline,
+              title: 'About',
+              subtitle: 'App version and publisher',
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const AboutScreen()),
+              ),
+            ),
+          ],
         ),
       ],
     );

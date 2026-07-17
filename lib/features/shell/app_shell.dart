@@ -17,14 +17,34 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   int _index = 0;
+  final Set<int> _loadedTabs = {0};
+  final List<Widget?> _tabs = List<Widget?>.filled(5, null);
 
-  static const _tabs = [
+  static const _tabsMeta = [
     (icon: Icons.dashboard_outlined, label: 'Dashboard'),
     (icon: Icons.memory_rounded, label: 'Machines'),
     (icon: Icons.shopping_bag_outlined, label: 'Products'),
     (icon: Icons.receipt_long_outlined, label: 'Orders'),
     (icon: Icons.more_horiz, label: 'More'),
   ];
+
+  Widget _tabWidget(int index) {
+    return _tabs[index] ??= switch (index) {
+      0 => const DashboardScreen(),
+      1 => const MachinesScreen(),
+      2 => const ProductsScreen(),
+      3 => const OrdersScreen(),
+      4 => const MenuHubScreen(),
+      _ => const SizedBox.shrink(),
+    };
+  }
+
+  void _onTabSelected(int index) {
+    setState(() {
+      _loadedTabs.add(index);
+      _index = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,19 +63,16 @@ class _AppShellState extends State<AppShell> {
       ),
       body: IndexedStack(
         index: _index,
-        children: const [
-          DashboardScreen(),
-          MachinesScreen(),
-          ProductsScreen(),
-          OrdersScreen(),
-          MenuHubScreen(),
-        ],
+        children: List.generate(
+          _tabsMeta.length,
+          (index) => _loadedTabs.contains(index) ? _tabWidget(index) : const SizedBox.shrink(),
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
+        onDestinationSelected: _onTabSelected,
         destinations: [
-          for (final tab in _tabs)
+          for (final tab in _tabsMeta)
             NavigationDestination(icon: Icon(tab.icon), label: tab.label),
         ],
       ),

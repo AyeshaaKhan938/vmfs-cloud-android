@@ -3,13 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/utils/debouncer.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../data/vmfs_repository.dart';
 import '../auth/auth_provider.dart';
 import '../../models/product.dart';
 
-final productsProvider = FutureProvider.family<List<ProductSummary>, String>((ref, search) async {
+final productsProvider = FutureProvider.autoDispose.family<List<ProductSummary>, String>((ref, search) async {
   return ref.watch(repositoryProvider).fetchProducts(search: search);
 });
 
@@ -22,6 +23,13 @@ class ProductsScreen extends ConsumerStatefulWidget {
 
 class _ProductsScreenState extends ConsumerState<ProductsScreen> {
   String _search = '';
+  final _debouncer = Debouncer();
+
+  @override
+  void dispose() {
+    _debouncer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +45,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
               hintText: 'Search products...',
               prefixIcon: Icon(Icons.search),
             ),
-            onChanged: (v) => setState(() => _search = v),
+            onChanged: (v) => _debouncer.run(() => setState(() => _search = v.trim())),
           ),
         ),
         Expanded(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'vmfs_colors.dart';
 
@@ -16,10 +15,10 @@ abstract final class VmfsTheme {
       ),
       scaffoldBackgroundColor: VmfsColors.background,
       dividerColor: VmfsColors.border,
+      fontFamily: 'Roboto',
     );
 
     return base.copyWith(
-      textTheme: GoogleFonts.interTextTheme(base.textTheme),
       appBarTheme: const AppBarTheme(
         backgroundColor: VmfsColors.surface,
         foregroundColor: VmfsColors.textPrimary,

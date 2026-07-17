@@ -14,11 +14,11 @@ class AuthState {
 
   bool get isAuthenticated => user != null;
 
-  AuthState copyWith({AuthUser? user, bool? isLoading, String? error}) {
+  AuthState copyWith({AuthUser? user, bool? isLoading, String? error, bool clearError = false}) {
     return AuthState(
       user: user ?? this.user,
       isLoading: isLoading ?? this.isLoading,
-      error: error,
+      error: clearError ? null : (error ?? this.error),
     );
   }
 }
@@ -40,7 +40,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoading: true, clearError: true);
     try {
       final user = await _repository.login(email: email, password: password);
       state = AuthState(user: user, isLoading: false);

@@ -1,7 +1,7 @@
 name: vmfs_cloud_mobile
 description: VMFS USA Cloud — cross-platform mobile admin for vending operations.
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ^3.12.2
@@ -15,12 +15,23 @@ dependencies:
   go_router: ^14.6.2
   flutter_secure_storage: ^9.2.4
   intl: ^0.20.2
-  google_fonts: ^6.2.1
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/images/vmfs-logo.jpg
+  adaptive_icon_background: '#FFFFFF'
+  adaptive_icon_foreground: assets/images/vmfs-logo.jpg
+  remove_alpha_ios: true
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/vmfs-logo.jpg

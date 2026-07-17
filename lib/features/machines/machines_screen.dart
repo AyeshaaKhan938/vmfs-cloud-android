@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/utils/debouncer.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../data/vmfs_repository.dart';
 import '../auth/auth_provider.dart';
 import '../../models/machine.dart';
 
-final machinesProvider = FutureProvider.family<List<MachineSummary>, String>((ref, search) async {
+final machinesProvider = FutureProvider.autoDispose.family<List<MachineSummary>, String>((ref, search) async {
   return ref.watch(repositoryProvider).fetchMachines(search: search);
 });
 
@@ -21,6 +22,13 @@ class MachinesScreen extends ConsumerStatefulWidget {
 
 class _MachinesScreenState extends ConsumerState<MachinesScreen> {
   String _search = '';
+  final _debouncer = Debouncer();
+
+  @override
+  void dispose() {
+    _debouncer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +43,7 @@ class _MachinesScreenState extends ConsumerState<MachinesScreen> {
               hintText: 'Search machines...',
               prefixIcon: Icon(Icons.search),
             ),
-            onChanged: (v) => setState(() => _search = v),
+            onChanged: (v) => _debouncer.run(() => setState(() => _search = v.trim())),
           ),
         ),
         Expanded(
