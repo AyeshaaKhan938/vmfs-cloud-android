@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/onboarding/app_onboarding.dart';
 import '../../core/widgets/vmfs_brand_panel.dart';
+import '../auth/auth_provider.dart';
 import '../dashboard/dashboard_screen.dart';
 import '../machines/machines_screen.dart';
 import '../menu/menu_hub_screen.dart';
@@ -20,6 +22,7 @@ class AppShell extends ConsumerStatefulWidget {
 
 class _AppShellState extends ConsumerState<AppShell> {
   final List<Widget?> _tabs = List<Widget?>.filled(5, null);
+  bool _appTourQueued = false;
 
   static const _tabsMeta = [
     (icon: Icons.dashboard_outlined, label: 'Dashboard'),
@@ -38,6 +41,19 @@ class _AppShellState extends ConsumerState<AppShell> {
       4 => const MenuHubScreen(),
       _ => const SizedBox.shrink(),
     };
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _queueAppGuidedTour());
+  }
+
+  Future<void> _queueAppGuidedTour() async {
+    if (_appTourQueued || !mounted) return;
+    _appTourQueued = true;
+    final user = ref.read(authProvider).user;
+    await showAppGuidedTour(context, ref, user: user);
   }
 
   void _onTabSelected(int index) {

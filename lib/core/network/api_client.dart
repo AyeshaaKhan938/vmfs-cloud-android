@@ -11,7 +11,7 @@ class ApiClient {
   })  : _tokenStorage = tokenStorage ?? TokenStorage(),
         _dio = Dio(
           BaseOptions(
-            baseUrl: AppConfig.apiBaseUrl,
+            baseUrl: _normalizeBaseUrl(AppConfig.apiBaseUrl),
             connectTimeout: AppConfig.connectTimeout,
             receiveTimeout: AppConfig.receiveTimeout,
             headers: {
@@ -68,11 +68,19 @@ class ApiClient {
   final TokenStorage _tokenStorage;
   final void Function()? onUnauthorized;
 
+  static String _normalizeBaseUrl(String baseUrl) {
+    return baseUrl.endsWith('/') ? baseUrl : '$baseUrl/';
+  }
+
+  static String _normalizePath(String path) {
+    return path.startsWith('/') ? path.substring(1) : path;
+  }
+
   Future<void> warmAuthHeader() => _tokenStorage.readToken();
 
   Future<Map<String, dynamic>> get(String path, {Map<String, dynamic>? query}) async {
     try {
-      final response = await _dio.get<Map<String, dynamic>>(path, queryParameters: query);
+      final response = await _dio.get<Map<String, dynamic>>(_normalizePath(path), queryParameters: query);
       return _unwrap(response.data);
     } on DioException catch (e) {
       throw _mapError(e);
@@ -81,7 +89,7 @@ class ApiClient {
 
   Future<Map<String, dynamic>> post(String path, {Map<String, dynamic>? body}) async {
     try {
-      final response = await _dio.post<Map<String, dynamic>>(path, data: body);
+      final response = await _dio.post<Map<String, dynamic>>(_normalizePath(path), data: body);
       return _unwrap(response.data);
     } on DioException catch (e) {
       throw _mapError(e);
@@ -90,7 +98,7 @@ class ApiClient {
 
   Future<Map<String, dynamic>> patch(String path, {Map<String, dynamic>? body}) async {
     try {
-      final response = await _dio.patch<Map<String, dynamic>>(path, data: body);
+      final response = await _dio.patch<Map<String, dynamic>>(_normalizePath(path), data: body);
       return _unwrap(response.data);
     } on DioException catch (e) {
       throw _mapError(e);
@@ -99,7 +107,7 @@ class ApiClient {
 
   Future<void> delete(String path) async {
     try {
-      await _dio.delete<void>(path);
+      await _dio.delete<void>(_normalizePath(path));
     } on DioException catch (e) {
       throw _mapError(e);
     }

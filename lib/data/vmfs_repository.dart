@@ -331,6 +331,92 @@ class VmfsRepository {
     return _mapList(data['tags']);
   }
 
+  Future<Map<String, dynamic>> fetchAdvertisementGroup(int id) async {
+    final data = await _api.get('/advertisement-groups/$id');
+    return Map<String, dynamic>.from(data['group'] as Map);
+  }
+
+  Future<void> bulkUpdateMachines(List<int> ids, Map<String, dynamic> fields) async {
+    await _api.patch('/machines/bulk', body: {
+      'ids': ids,
+      ...fields,
+    });
+  }
+
+  Future<void> bulkUpdateProducts(List<int> ids, Map<String, dynamic> fields) async {
+    await _api.patch('/products/bulk', body: {
+      'ids': ids,
+      ...fields,
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> restockAllSlots(int machineId) async {
+    final data = await _api.post('/machines/$machineId/slots/restock-all');
+    return _mapList(data['slots']);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchAgeVerificationSessions() async {
+    final data = await _api.get('/system/age-verification-sessions');
+    return _mapList(data['sessions']);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchRefunds() async {
+    final data = await _api.get('/system/refunds');
+    return _mapList(data['refunds']);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPushRecords() async {
+    final data = await _api.get('/system/push-records');
+    return _mapList(data['records']);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchInformationStorageRecords() async {
+    final data = await _api.get('/system/information-storage-records');
+    return _mapList(data['records']);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchPaymentGateways() async {
+    final data = await _api.get('/system/payment-gateways');
+    return _mapList(data['gateways']);
+  }
+
+  Future<Map<String, dynamic>> fetchRenewalCenter() async {
+    final data = await _api.get('/system/renewal-center');
+    return {
+      'equipment': _mapList(data['equipment']),
+      'history': _mapList(data['history']),
+    };
+  }
+
+  Future<Map<String, dynamic>> fetchBrandSettings() async {
+    final data = await _api.get('/system/brand-settings');
+    return Map<String, dynamic>.from(data['settings'] as Map);
+  }
+
+  Future<Map<String, dynamic>> fetchNotificationSettings() async {
+    final data = await _api.get('/admin/notification-settings');
+    return Map<String, dynamic>.from(data['settings'] as Map);
+  }
+
+  Future<void> updateNotificationSettings(Map<String, dynamic> values) async {
+    await _api.patch('/admin/notification-settings', body: values);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchAdminUsers() async {
+    final data = await _api.get('/admin/users');
+    return _mapList(data['users']);
+  }
+
+  Future<void> createTeamMember(Map<String, dynamic> values) async {
+    await _api.post('/team-members', body: values);
+  }
+
+  Future<void> updateTeamMember(int id, Map<String, dynamic> values) async {
+    await _api.patch('/team-members/$id', body: values);
+  }
+
+  Future<void> deleteTeamMember(int id) => _api.delete('/team-members/$id');
+
   Future<List<Map<String, dynamic>>> fetchCoupons() async {
     final data = await _api.get('/coupons');
     return _mapList(data['coupons']);
@@ -348,6 +434,16 @@ class VmfsRepository {
 
   Future<List<Map<String, dynamic>>> fetchMachineGroups() async {
     final data = await _api.get('/machine-groups');
+    return _mapList(data['groups']);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchFinanceGroups() async {
+    final data = await _api.get('/finance-groups');
+    return _mapList(data['groups']);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchLabelGroups() async {
+    final data = await _api.get('/label-groups');
     return _mapList(data['groups']);
   }
 
@@ -426,6 +522,22 @@ class VmfsRepository {
 
   Future<void> deleteMachineGroup(int id) => deleteResource('machine-groups', id);
 
+  Future<void> createFinanceGroup(Map<String, dynamic> values) =>
+      createNamedResource('finance-groups', values);
+
+  Future<void> updateFinanceGroup(int id, Map<String, dynamic> values) =>
+      updateNamedResource('finance-groups', id, values);
+
+  Future<void> deleteFinanceGroup(int id) => deleteResource('finance-groups', id);
+
+  Future<void> createLabelGroup(Map<String, dynamic> values) =>
+      createNamedResource('label-groups', values);
+
+  Future<void> updateLabelGroup(int id, Map<String, dynamic> values) =>
+      updateNamedResource('label-groups', id, values);
+
+  Future<void> deleteLabelGroup(int id) => deleteResource('label-groups', id);
+
   Future<void> createProductCategory(Map<String, dynamic> values) =>
       _api.post('product-categories', body: {
         'name': values['name'],
@@ -454,37 +566,44 @@ class VmfsRepository {
   Future<void> deleteProductType(int id) => deleteResource('product-types', id);
 
   Future<void> createAdvertisement(Map<String, dynamic> values) async {
-    await _api.post('advertisements', body: {
-      'title': values['title'],
-      'type': values['type']?.toString().isNotEmpty == true ? values['type'] : 'image',
-      if (values['link_url']?.toString().isNotEmpty ?? false) 'link_url': values['link_url'],
-      if (values['advertiser_name']?.toString().isNotEmpty ?? false) 'advertiser_name': values['advertiser_name'],
-    });
+    await _api.post('advertisements', body: _advertisementBody(values));
   }
 
   Future<void> updateAdvertisement(int id, Map<String, dynamic> values) async {
-    await _api.patch('advertisements/$id', body: {
-      if (values['title']?.toString().isNotEmpty ?? false) 'title': values['title'],
-      if (values['type']?.toString().isNotEmpty ?? false) 'type': values['type'],
-      if (values['link_url']?.toString().isNotEmpty ?? false) 'link_url': values['link_url'],
-    });
+    await _api.patch('advertisements/$id', body: _advertisementBody(values, partial: true));
   }
 
   Future<void> deleteAdvertisement(int id) => deleteResource('advertisements', id);
 
-  Future<void> createAdvertisementGroup(Map<String, dynamic> values) =>
-      createNamedResource('advertisement-groups', values);
+  Future<void> createAdvertisementGroup(Map<String, dynamic> values) async {
+    await _api.post('advertisement-groups', body: {
+      'name': values['name'],
+      if (values['slots'] != null) 'slots': values['slots'],
+    });
+  }
 
-  Future<void> updateAdvertisementGroup(int id, Map<String, dynamic> values) =>
-      updateNamedResource('advertisement-groups', id, values);
+  Future<void> updateAdvertisementGroup(int id, Map<String, dynamic> values) async {
+    await _api.patch('advertisement-groups/$id', body: {
+      if (values['name']?.toString().isNotEmpty ?? false) 'name': values['name'],
+      if (values['slots'] != null) 'slots': values['slots'],
+    });
+  }
 
   Future<void> deleteAdvertisementGroup(int id) => deleteResource('advertisement-groups', id);
 
-  Future<void> createAdvertisementTag(Map<String, dynamic> values) =>
-      createNamedResource('advertisement-tags', values);
+  Future<void> createAdvertisementTag(Map<String, dynamic> values) async {
+    await _api.post('advertisement-tags', body: {
+      'name': values['name'],
+      if (values['advertisement_ids'] != null) 'advertisement_ids': values['advertisement_ids'],
+    });
+  }
 
-  Future<void> updateAdvertisementTag(int id, Map<String, dynamic> values) =>
-      updateNamedResource('advertisement-tags', id, values);
+  Future<void> updateAdvertisementTag(int id, Map<String, dynamic> values) async {
+    await _api.patch('advertisement-tags/$id', body: {
+      if (values['name']?.toString().isNotEmpty ?? false) 'name': values['name'],
+      if (values['advertisement_ids'] != null) 'advertisement_ids': values['advertisement_ids'],
+    });
+  }
 
   Future<void> deleteAdvertisementTag(int id) => deleteResource('advertisement-tags', id);
 
@@ -530,6 +649,35 @@ class VmfsRepository {
         body[key] = values[key];
       }
     }
+    return body;
+  }
+
+  Map<String, dynamic> _advertisementBody(Map<String, dynamic> values, {bool partial = false}) {
+    final body = <String, dynamic>{};
+
+    void put(String key, dynamic value) {
+      if (partial) {
+        if (value == null) return;
+        if (value is String && value.trim().isEmpty) return;
+      }
+      body[key] = value;
+    }
+
+    put('title', values['title']);
+    put('type', values['type']?.toString().isNotEmpty == true ? values['type'] : (partial ? null : 'image'));
+    put('media_path', values['media_path']);
+    put('link_url', values['link_url']);
+    put('advertiser_name', values['advertiser_name']);
+    put('remarks', values['remarks']);
+
+    if (values['cost']?.toString().isNotEmpty ?? false) {
+      body['cost'] = double.tryParse(values['cost'].toString()) ?? 0;
+    }
+
+    if (values['tag_ids'] != null) {
+      body['tag_ids'] = values['tag_ids'];
+    }
+
     return body;
   }
 

@@ -32,6 +32,14 @@ final productTypesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) as
   return ref.watch(repositoryProvider).fetchProductTypes();
 });
 
+final financeGroupsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  return ref.watch(repositoryProvider).fetchFinanceGroups();
+});
+
+final labelGroupsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+  return ref.watch(repositoryProvider).fetchLabelGroups();
+});
+
 class MachineGroupsScreen extends ConsumerWidget {
   const MachineGroupsScreen({super.key});
 
@@ -187,6 +195,52 @@ class ProductTypesScreen extends ConsumerWidget {
       onCreate: repo.createProductType,
       onUpdate: repo.updateProductType,
       onDelete: repo.deleteProductType,
+    );
+  }
+}
+
+class FinanceGroupsScreen extends ConsumerWidget {
+  const FinanceGroupsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canManage = ref.watch(authProvider.select((s) => s.user?.canAccess('machines_view') ?? false));
+    final repo = ref.read(repositoryProvider);
+
+    return VmfsCrudScreen(
+      title: 'Finance groups',
+      provider: financeGroupsProvider,
+      emptyTitle: 'No finance groups',
+      canManage: canManage,
+      fields: const [VmfsCrudField(key: 'name', label: 'Group name', required: true)],
+      itemTitle: (item) => item['name'] as String? ?? 'Group',
+      itemSubtitle: (item) => '${item['machine_count'] ?? 0} machines',
+      onCreate: repo.createFinanceGroup,
+      onUpdate: repo.updateFinanceGroup,
+      onDelete: repo.deleteFinanceGroup,
+    );
+  }
+}
+
+class LabelGroupsScreen extends ConsumerWidget {
+  const LabelGroupsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final canManage = ref.watch(authProvider.select((s) => s.user?.canAccess('machines_view') ?? false));
+    final repo = ref.read(repositoryProvider);
+
+    return VmfsCrudScreen(
+      title: 'Label groups',
+      provider: labelGroupsProvider,
+      emptyTitle: 'No label groups',
+      canManage: canManage,
+      fields: const [VmfsCrudField(key: 'name', label: 'Group name', required: true)],
+      itemTitle: (item) => item['name'] as String? ?? 'Group',
+      itemSubtitle: (item) => '${item['machine_count'] ?? 0} machines',
+      onCreate: repo.createLabelGroup,
+      onUpdate: repo.updateLabelGroup,
+      onDelete: repo.deleteLabelGroup,
     );
   }
 }

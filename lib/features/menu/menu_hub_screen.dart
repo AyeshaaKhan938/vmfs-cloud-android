@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/legal/legal_content.dart';
+import '../../core/onboarding/app_onboarding.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../legal/about_screen.dart';
@@ -15,6 +16,7 @@ import '../reports/reports_screen.dart';
 import '../profile/profile_screen.dart';
 import '../team/team_screen.dart';
 import '../wallet/wallet_screen.dart';
+import '../system/system_screens.dart';
 
 class MenuHubScreen extends ConsumerWidget {
   const MenuHubScreen({super.key});
@@ -75,6 +77,28 @@ class MenuHubScreen extends ConsumerWidget {
                 title: 'Alarms',
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => const MachineAlarmsScreen()),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.verified_user_outlined,
+                title: 'Age verification',
+                subtitle: 'Recent ID verification sessions',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const AgeVerificationSessionsScreen()),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.account_balance_outlined,
+                title: 'Finance groups',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const FinanceGroupsScreen()),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.label_outline,
+                title: 'Label groups',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const LabelGroupsScreen()),
                 ),
               ),
             ],
@@ -150,9 +174,23 @@ class MenuHubScreen extends ConsumerWidget {
             ],
           ),
         ],
+        if (can('sales')) ...[
+          _Section(
+            title: 'Sales',
+            children: [
+              _MenuTile(
+                icon: Icons.receipt_long_outlined,
+                title: 'Refund records',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const RefundRecordsScreen()),
+                ),
+              ),
+            ],
+          ),
+        ],
         if (can('wallet')) ...[
           _Section(
-            title: 'Wallet',
+            title: 'Wallet & payments',
             children: [
               _MenuTile(
                 icon: Icons.account_balance_wallet_outlined,
@@ -160,6 +198,57 @@ class MenuHubScreen extends ConsumerWidget {
                 subtitle: currency.format(user?.walletBalance ?? 0),
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => const WalletScreen()),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.payments_outlined,
+                title: 'Payment gateways',
+                subtitle: 'Collection account configuration status',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const PaymentGatewaysScreen()),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.autorenew_outlined,
+                title: 'Renewal center',
+                subtitle: 'Equipment renewals and history',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const RenewalCenterScreen()),
+                ),
+              ),
+            ],
+          ),
+        ],
+        if (user?.hasFullAccess == true) ...[
+          _Section(
+            title: 'Platform operations',
+            children: [
+              _MenuTile(
+                icon: Icons.notifications_active_outlined,
+                title: 'Push records',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const PushRecordsScreen()),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.storage_outlined,
+                title: 'Information storage',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const InformationStorageScreen()),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.groups_outlined,
+                title: 'Platform users',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const AdminUsersScreen()),
+                ),
+              ),
+              _MenuTile(
+                icon: Icons.palette_outlined,
+                title: 'Brand settings',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const BrandSettingsScreen()),
                 ),
               ),
             ],
@@ -204,6 +293,12 @@ class MenuHubScreen extends ConsumerWidget {
         _Section(
           title: 'Legal & support',
           children: [
+            _MenuTile(
+              icon: Icons.explore_outlined,
+              title: 'Guided app tour',
+              subtitle: 'Walk through every tab with Next and Previous',
+              onTap: () => showAppGuidedTour(context, ref, user: user, force: true),
+            ),
             _MenuTile(
               icon: Icons.help_outline,
               title: 'Help & FAQ',

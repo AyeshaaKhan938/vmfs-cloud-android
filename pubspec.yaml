@@ -1,7 +1,7 @@
 name: vmfs_cloud_mobile
 description: VMFS USA Cloud — cross-platform mobile admin for vending operations.
 publish_to: 'none'
-version: 2.0.0+5
+version: 2.0.0+7
 
 environment:
   sdk: ^3.12.2
