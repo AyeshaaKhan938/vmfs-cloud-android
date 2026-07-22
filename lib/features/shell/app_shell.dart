@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/widgets/vmfs_brand_panel.dart';
 import '../dashboard/dashboard_screen.dart';
@@ -8,15 +9,16 @@ import '../orders/orders_screen.dart';
 import '../products/products_screen.dart';
 import '../support/support_screen.dart';
 
-class AppShell extends StatefulWidget {
+final appShellTabIndexProvider = StateProvider<int>((ref) => 0);
+
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
-  int _index = 0;
+class _AppShellState extends ConsumerState<AppShell> {
   final List<Widget?> _tabs = List<Widget?>.filled(5, null);
 
   static const _tabsMeta = [
@@ -39,12 +41,13 @@ class _AppShellState extends State<AppShell> {
   }
 
   void _onTabSelected(int index) {
-    if (_index == index) return;
-    setState(() => _index = index);
+    if (ref.read(appShellTabIndexProvider) == index) return;
+    ref.read(appShellTabIndexProvider.notifier).state = index;
   }
 
   @override
   Widget build(BuildContext context) {
+    final index = ref.watch(appShellTabIndexProvider);
     return Scaffold(
       appBar: AppBar(
         title: const VmfsAppBarTitle(),
@@ -58,9 +61,9 @@ class _AppShellState extends State<AppShell> {
           ),
         ],
       ),
-      body: _tabWidget(_index),
+      body: _tabWidget(index),
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _index,
+        selectedIndex: index,
         onDestinationSelected: _onTabSelected,
         destinations: [
           for (final tab in _tabsMeta)

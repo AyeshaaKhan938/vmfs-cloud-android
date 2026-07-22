@@ -87,32 +87,39 @@ class VmfsStatCard extends StatelessWidget {
     required this.value,
     this.color = VmfsColors.textPrimary,
     this.icon,
+    this.onTap,
   });
 
   final String label;
   final String value;
   final Color color;
   final IconData? icon;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, size: 18, color: color),
-              const SizedBox(height: 8),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 18, color: color),
+                const SizedBox(height: 8),
+              ],
+              Text(
+                value,
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: color),
+              ),
+              const SizedBox(height: 4),
+              Text(label, style: const TextStyle(fontSize: 12, color: VmfsColors.textSecondary)),
             ],
-            Text(
-              value,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: color),
-            ),
-            const SizedBox(height: 4),
-            Text(label, style: const TextStyle(fontSize: 12, color: VmfsColors.textSecondary)),
-          ],
+          ),
         ),
       ),
     );

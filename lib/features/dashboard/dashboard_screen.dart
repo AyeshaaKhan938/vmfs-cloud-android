@@ -8,6 +8,9 @@ import '../../core/widgets/vmfs_logo.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../models/dashboard.dart';
 import '../auth/auth_provider.dart';
+import '../shell/app_shell.dart';
+import '../support/support_screen.dart';
+import '../wallet/wallet_screen.dart';
 
 final dashboardProvider = FutureProvider.autoDispose<DashboardStats>((ref) async {
   final auth = ref.read(authProvider);
@@ -51,6 +54,10 @@ class DashboardScreen extends ConsumerWidget {
         );
       },
       data: (stats) {
+        void goToTab(int index) {
+          ref.read(appShellTabIndexProvider.notifier).state = index;
+        }
+
         return RefreshIndicator(
           onRefresh: () async => ref.invalidate(dashboardProvider),
           child: ListView(
@@ -79,34 +86,44 @@ class DashboardScreen extends ConsumerWidget {
                     value: '${stats.machineCount}',
                     icon: Icons.memory_rounded,
                     color: VmfsColors.info,
+                    onTap: () => goToTab(1),
                   ),
                   VmfsStatCard(
                     label: 'Online now',
                     value: '${stats.onlineMachines}',
                     icon: Icons.wifi,
                     color: VmfsColors.success,
+                    onTap: () => goToTab(1),
                   ),
                   VmfsStatCard(
                     label: "Today's orders",
                     value: '${stats.todayOrders}',
                     icon: Icons.shopping_cart_outlined,
+                    onTap: () => goToTab(3),
                   ),
                   VmfsStatCard(
                     label: "Today's revenue",
                     value: currency.format(stats.todayRevenue),
                     icon: Icons.payments_outlined,
                     color: VmfsColors.primaryDark,
+                    onTap: () => goToTab(3),
                   ),
                   VmfsStatCard(
                     label: 'Open tickets',
                     value: '${stats.openTickets}',
                     icon: Icons.support_agent_outlined,
                     color: VmfsColors.warning,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => const SupportScreen()),
+                    ),
                   ),
                   VmfsStatCard(
                     label: 'Wallet',
                     value: currency.format(stats.walletBalance),
                     icon: Icons.account_balance_wallet_outlined,
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(builder: (_) => const WalletScreen()),
+                    ),
                   ),
                 ],
               ),
