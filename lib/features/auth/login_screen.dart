@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/config/app_config.dart';
 import '../../core/legal/legal_content.dart';
@@ -158,8 +159,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       child: const Text('Help & support'),
                     ),
                     const SizedBox(height: 8),
+                    OutlinedButton(
+                      onPressed: isLoading ? null : () => context.go('/register'),
+                      child: const Text('Create customer account'),
+                    ),
+                    const SizedBox(height: 8),
                     const Text(
-                      'Use the same account as VMFS Cloud web admin.',
+                      'New customers register here. Accounts require admin approval before sign-in.',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 12, color: VmfsColors.textSecondary),
                     ),

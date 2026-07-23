@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/utils/debouncer.dart';
+import '../../core/onboarding/machine_onboarding.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/bulk_edit_sheet.dart';
 import '../../core/widgets/vmfs_widgets.dart';
@@ -199,9 +200,14 @@ final machineDetailProvider = FutureProvider.family<MachineDetail, int>((ref, id
 });
 
 class MachineDetailScreen extends ConsumerStatefulWidget {
-  const MachineDetailScreen({super.key, required this.machineId});
+  const MachineDetailScreen({
+    super.key,
+    required this.machineId,
+    this.showOnboardingOnOpen = false,
+  });
 
   final int machineId;
+  final bool showOnboardingOnOpen;
 
   @override
   ConsumerState<MachineDetailScreen> createState() => _MachineDetailScreenState();
@@ -209,6 +215,32 @@ class MachineDetailScreen extends ConsumerStatefulWidget {
 
 class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
   bool _restocking = false;
+  bool _onboardingQueued = false;
+
+  Future<void> _runMachineOnboarding(MachineDetail machine, {bool force = false}) async {
+    final profile = await ref.read(repositoryProvider).fetchMachineOnboardingProfile(machine.machineNumber);
+    if (!mounted) return;
+
+    await maybeShowMachineOnboarding(
+      context: context,
+      ref: ref,
+      machineId: machine.id,
+      profile: profile,
+      force: force,
+    );
+  }
+
+  void _queueMachineOnboarding(MachineDetail machine) {
+    if (_onboardingQueued) {
+      return;
+    }
+
+    _onboardingQueued = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _runMachineOnboarding(machine, force: widget.showOnboardingOnOpen);
+    });
+  }
 
   Future<void> _restockAll() async {
     final ok = await showDialog<bool>(
@@ -254,6 +286,14 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
       appBar: AppBar(
         title: const Text('Machine'),
         actions: [
+          IconButton(
+            tooltip: 'Machine setup guide',
+            onPressed: detail.maybeWhen(
+              data: (machine) => () => _runMachineOnboarding(machine, force: true),
+              orElse: () => null,
+            ),
+            icon: const Icon(Icons.help_outline),
+          ),
           if (canEdit)
             IconButton(
               tooltip: 'Edit machine',
@@ -281,6 +321,8 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
           onRetry: () => ref.invalidate(machineDetailProvider(widget.machineId)),
         ),
         data: (machine) {
+          _queueMachineOnboarding(machine);
+
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [

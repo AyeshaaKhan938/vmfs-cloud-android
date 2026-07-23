@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../features/auth/auth_provider.dart';
 import '../../features/auth/login_screen.dart';
+import '../../features/auth/register_screen.dart';
+import '../../features/auth/registration_pending_screen.dart';
 import '../../features/machines/machine_form_screen.dart';
 import '../../features/machines/machine_slot_form_screen.dart';
 import '../../features/machines/machines_screen.dart';
@@ -27,6 +29,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isLoading = auth.isLoading;
       final isLoggedIn = auth.isAuthenticated;
       final onLogin = location == '/login';
+      final onRegister = location.startsWith('/register');
       final onLoading = location == '/loading';
 
       if (isLoading) {
@@ -37,11 +40,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return isLoggedIn ? '/' : '/login';
       }
 
-      if (!isLoggedIn && !onLogin) {
+      if (!isLoggedIn && !onLogin && !onRegister) {
         return '/login';
       }
 
-      if (isLoggedIn && onLogin) {
+      if (isLoggedIn && (onLogin || onRegister)) {
         return '/';
       }
 
@@ -53,6 +56,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, __) => const Scaffold(body: VmfsLoadingView()),
       ),
       GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
+      GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
+      GoRoute(
+        path: '/register/pending',
+        builder: (_, state) => RegistrationPendingScreen(
+          email: state.extra as String? ?? '',
+        ),
+      ),
       GoRoute(path: '/', builder: (_, __) => const AppShell()),
       GoRoute(path: '/machines/new', builder: (_, __) => const MachineFormScreen()),
       GoRoute(
@@ -61,7 +71,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/machines/:id',
-        builder: (_, state) => MachineDetailScreen(machineId: int.parse(state.pathParameters['id']!)),
+        builder: (_, state) => MachineDetailScreen(
+          machineId: int.parse(state.pathParameters['id']!),
+          showOnboardingOnOpen: state.uri.queryParameters['onboarding'] == '1',
+        ),
       ),
       GoRoute(
         path: '/machines/:id/slots/new',

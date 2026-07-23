@@ -1,8 +1,10 @@
 import '../../core/network/api_client.dart';
 import '../../core/storage/token_storage.dart';
 import '../../models/auth_user.dart';
+import '../../models/registration_result.dart';
 import '../../models/dashboard.dart';
 import '../../models/machine.dart';
+import '../../models/machine_onboarding_profile.dart';
 import '../../models/order.dart';
 import '../../models/product.dart';
 import '../../models/reports.dart';
@@ -41,6 +43,24 @@ class VmfsRepository {
     await _tokenStorage.saveToken(token);
 
     return AuthUser.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  Future<RegistrationResult> register({
+    required String name,
+    required String email,
+    required String phone,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    final data = await _api.post('/auth/register', body: {
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+    });
+
+    return RegistrationResult.fromJson(data);
   }
 
   Future<void> logout() async {
@@ -82,6 +102,13 @@ class VmfsRepository {
   Future<MachineDetail> fetchMachine(int id) async {
     final data = await _api.get('/machines/$id');
     return MachineDetail.fromJson(data);
+  }
+
+  Future<MachineOnboardingProfile> fetchMachineOnboardingProfile(String machineNumber) async {
+    final data = await _api.get('/machines/onboarding-profile', query: {
+      'machine_number': machineNumber,
+    });
+    return MachineOnboardingProfile.fromJson(data['onboarding'] as Map<String, dynamic>);
   }
 
   Future<MachineDetail> createMachine({

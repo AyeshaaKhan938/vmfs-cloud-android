@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/network/api_exception.dart';
+import '../../core/theme/vmfs_colors.dart';
+import '../../core/utils/debouncer.dart';
 import '../../core/widgets/vmfs_widgets.dart';
-import '../../models/machine.dart';
+import '../../models/machine_onboarding_profile.dart';
 import '../auth/auth_provider.dart';
 
 class MachineFormScreen extends ConsumerStatefulWidget {
@@ -24,17 +26,54 @@ class _MachineFormScreenState extends ConsumerState<MachineFormScreen> {
   final _nameController = TextEditingController();
   final _addressController = TextEditingController();
   final _remarksController = TextEditingController();
+  final _profileDebouncer = Debouncer();
   bool _isEnabled = true;
   bool _ageVerification = false;
   int? _groupId;
   bool _loading = false;
   bool _initialized = false;
+  bool _profileLoading = false;
   List<Map<String, dynamic>> _groups = const [];
+  MachineOnboardingProfile? _detectedProfile;
 
   @override
   void initState() {
     super.initState();
+    _numberController.addListener(_onMachineNumberChanged);
     _loadLookups();
+  }
+
+  void _onMachineNumberChanged() {
+    if (widget.isEditing) {
+      return;
+    }
+
+    final number = _numberController.text.trim();
+    if (number.length < 6) {
+      setState(() => _detectedProfile = null);
+      return;
+    }
+
+    setState(() => _profileLoading = true);
+    _profileDebouncer.run(() async {
+      try {
+        final profile = await ref.read(repositoryProvider).fetchMachineOnboardingProfile(number);
+        if (!mounted || _numberController.text.trim() != number) {
+          return;
+        }
+        setState(() {
+          _detectedProfile = profile;
+          _profileLoading = false;
+        });
+      } catch (_) {
+        if (mounted) {
+          setState(() {
+            _detectedProfile = null;
+            _profileLoading = false;
+          });
+        }
+      }
+    });
   }
 
   Future<void> _loadLookups() async {
@@ -64,6 +103,8 @@ class _MachineFormScreenState extends ConsumerState<MachineFormScreen> {
 
   @override
   void dispose() {
+    _numberController.removeListener(_onMachineNumberChanged);
+    _profileDebouncer.dispose();
     _numberController.dispose();
     _nameController.dispose();
     _addressController.dispose();
@@ -99,7 +140,9 @@ class _MachineFormScreenState extends ConsumerState<MachineFormScreen> {
           ageVerificationEnabled: _ageVerification,
           remarks: _remarksController.text.trim(),
         );
-        if (mounted) context.go('/machines/${created.id}');
+        if (mounted) {
+          context.go('/machines/${created.id}?onboarding=1');
+        }
       }
     } on ApiException catch (e) {
       if (mounted) {
@@ -123,12 +166,42 @@ class _MachineFormScreenState extends ConsumerState<MachineFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            TextFormField(
-              controller: _numberController,
-              decoration: const InputDecoration(labelText: 'Machine number *'),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
-            ),
-            const SizedBox(height: 12),
+            if (!widget.isEditing) ...[
+              TextFormField(
+                controller: _numberController,
+                decoration: const InputDecoration(
+                  labelText: 'Machine number *',
+                  helperText: 'Enter the kiosk serial — guided setup depends on this number.',
+                ),
+                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              if (_profileLoading) ...[
+                const SizedBox(height: 12),
+                const LinearProgressIndicator(),
+              ],
+              if (_detectedProfile != null) ...[
+                const SizedBox(height: 12),
+                Card(
+                  color: VmfsColors.primaryLight.withValues(alpha: 0.35),
+                  child: ListTile(
+                    leading: const Icon(Icons.memory_rounded, color: VmfsColors.primaryDark),
+                    title: Text(
+                      _detectedProfile!.label,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    subtitle: Text(_detectedProfile!.description),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+            ] else ...[
+              TextFormField(
+                controller: _numberController,
+                decoration: const InputDecoration(labelText: 'Machine number *'),
+                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+              ),
+              const SizedBox(height: 12),
+            ],
             TextFormField(
               controller: _nameController,
               decoration: const InputDecoration(labelText: 'Machine name *'),

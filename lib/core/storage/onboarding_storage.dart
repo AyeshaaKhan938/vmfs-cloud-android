@@ -54,6 +54,17 @@ class OnboardingStorage {
     await markCompleted(firstInstallTutorialKey);
   }
 
+  String _machineOnboardingKey(int machineId, String profileKey) =>
+      'vmfs_machine_onboarding_v1_${machineId}_$profileKey';
+
+  Future<bool> hasCompletedMachineOnboarding(int machineId, String profileKey) async {
+    return hasCompleted(_machineOnboardingKey(machineId, profileKey));
+  }
+
+  Future<void> markMachineOnboardingCompleted(int machineId, String profileKey) async {
+    await markCompleted(_machineOnboardingKey(machineId, profileKey));
+  }
+
   Future<void> resetFirstInstallTutorial() async {
     await _storage.delete(key: firstInstallTutorialKey);
   }

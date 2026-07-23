@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/vmfs_repository.dart';
 import '../../models/auth_user.dart';
+import '../../models/registration_result.dart';
 
 final repositoryProvider = Provider<VmfsRepository>((ref) {
   return VmfsRepository(
@@ -47,7 +48,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> login(String email, String password) async {
-    state = const AuthState(isLoading: true);
+    state = const AuthState(isLoading: true, error: null);
     try {
       await _repository.login(email: email, password: password);
       await _repository.warmSession();
@@ -57,8 +58,36 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
       state = AuthState(user: user, isLoading: false, sessionReady: true);
     } catch (e) {
-      state = AuthState(isLoading: false, error: e.toString());
+      state = AuthState(isLoading: false, error: _formatError(e));
     }
+  }
+
+  Future<RegistrationResult?> register({
+    required String name,
+    required String email,
+    required String phone,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    state = const AuthState(isLoading: true, error: null);
+    try {
+      final result = await _repository.register(
+        name: name,
+        email: email,
+        phone: phone,
+        password: password,
+        passwordConfirmation: passwordConfirmation,
+      );
+      state = const AuthState(isLoading: false);
+      return result;
+    } catch (e) {
+      state = AuthState(isLoading: false, error: _formatError(e));
+      return null;
+    }
+  }
+
+  String _formatError(Object error) {
+    return error.toString();
   }
 
   Future<void> logout() async {
