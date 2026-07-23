@@ -22,7 +22,7 @@ class AppShell extends ConsumerStatefulWidget {
 
 class _AppShellState extends ConsumerState<AppShell> {
   final List<Widget?> _tabs = List<Widget?>.filled(5, null);
-  bool _appTourQueued = false;
+  bool _firstInstallTutorialQueued = false;
 
   static const _tabsMeta = [
     (icon: Icons.dashboard_outlined, label: 'Dashboard'),
@@ -46,14 +46,14 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _queueAppGuidedTour());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _queueFirstInstallTutorial());
   }
 
-  Future<void> _queueAppGuidedTour() async {
-    if (_appTourQueued || !mounted) return;
-    _appTourQueued = true;
+  Future<void> _queueFirstInstallTutorial() async {
+    if (_firstInstallTutorialQueued || !mounted) return;
+    _firstInstallTutorialQueued = true;
     final user = ref.read(authProvider).user;
-    await showAppGuidedTour(context, ref, user: user);
+    await maybeShowFirstInstallTutorial(context, ref, user: user);
   }
 
   void _onTabSelected(int index) {

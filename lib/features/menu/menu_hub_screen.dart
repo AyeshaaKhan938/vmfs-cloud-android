@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/legal/legal_content.dart';
-import '../../core/onboarding/app_onboarding.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../legal/about_screen.dart';
@@ -293,12 +292,6 @@ class MenuHubScreen extends ConsumerWidget {
         _Section(
           title: 'Legal & support',
           children: [
-            _MenuTile(
-              icon: Icons.explore_outlined,
-              title: 'Guided app tour',
-              subtitle: 'Walk through every tab with Next and Previous',
-              onTap: () => showAppGuidedTour(context, ref, user: user, force: true),
-            ),
             _MenuTile(
               icon: Icons.help_outline,
               title: 'Help & FAQ',

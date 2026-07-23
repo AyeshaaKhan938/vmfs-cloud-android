@@ -7,15 +7,18 @@ import '../storage/onboarding_storage.dart';
 import '../widgets/vmfs_tutorial_sheet.dart';
 import 'tutorial_step.dart';
 
-List<TutorialStep> buildAppGuidedTourSteps(AuthUser? user) {
+/// Single merged tour: app tabs + machine detail — shown once after first install.
+List<TutorialStep> buildFirstInstallTutorialSteps(AuthUser? user) {
   bool can(String feature) => user?.canAccess(feature) ?? false;
+  final canManageSlots = can('machine_slots');
 
   final steps = <TutorialStep>[
     const TutorialStep(
       kicker: 'Welcome',
       icon: Icons.waving_hand_outlined,
       title: 'Welcome to VMFS Cloud',
-      body: 'This guided tour walks through each tab — use Next and Previous to move at your own pace.',
+      body:
+          'Thanks for installing the app. This one-time tour explains each tab — use Next and Previous to move at your own pace.',
       tabIndex: 0,
     ),
     const TutorialStep(
@@ -49,12 +52,55 @@ List<TutorialStep> buildAppGuidedTourSteps(AuthUser? user) {
   steps.addAll([
     const TutorialStep(
       kicker: 'Inside a machine',
-      icon: Icons.grid_view_rounded,
-      title: 'Slots & restock',
-      body: 'Open any machine to see each slot’s product and stock. Use Restock all to fill every slot to max capacity.',
+      icon: Icons.dashboard_customize_outlined,
+      title: 'Machine overview',
+      body:
+          'After you tap a machine, see its name, number, and online status. Offline means the kiosk has not checked in recently.',
       tabIndex: 1,
     ),
-    if (can('machines_create'))
+    const TutorialStep(
+      kicker: 'Inside a machine',
+      icon: Icons.analytics_outlined,
+      title: 'Stock summary',
+      body: 'Total, Stocked, Low, Empty, and Fault counts help you spot problems before you open each slot.',
+      tabIndex: 1,
+    ),
+  ]);
+
+  if (canManageSlots) {
+    steps.add(
+      const TutorialStep(
+        kicker: 'Inside a machine',
+        icon: Icons.inventory_2_outlined,
+        title: 'Restock all',
+        body:
+            'Use Restock all to set every slot’s current stock to its max capacity in one tap — great after a refill visit.',
+        tabIndex: 1,
+      ),
+    );
+  }
+
+  steps.addAll([
+    const TutorialStep(
+      kicker: 'Inside a machine',
+      icon: Icons.grid_view_rounded,
+      title: 'Slots & products',
+      body: 'Each row is a physical slot. Tap a slot to change product, price, stock, or fault status.',
+      tabIndex: 1,
+    ),
+    TutorialStep(
+      kicker: 'Inside a machine',
+      icon: Icons.tune,
+      title: 'Machine toolbar',
+      body: canManageSlots
+          ? 'Edit updates machine settings (groups, age verification, location). + adds a new slot to this machine.'
+          : 'Edit opens machine settings such as groups, age verification, and location.',
+      tabIndex: 1,
+    ),
+  ]);
+
+  if (can('machines_create')) {
+    steps.add(
       const TutorialStep(
         kicker: 'Machines tab',
         icon: Icons.checklist,
@@ -62,6 +108,10 @@ List<TutorialStep> buildAppGuidedTourSteps(AuthUser? user) {
         body: 'Use the checklist icon (or long-press a machine) to select several machines and update settings together.',
         tabIndex: 1,
       ),
+    );
+  }
+
+  steps.add(
     const TutorialStep(
       kicker: 'Products tab',
       icon: Icons.shopping_bag_outlined,
@@ -69,10 +119,10 @@ List<TutorialStep> buildAppGuidedTourSteps(AuthUser? user) {
       body: 'All sellable items live here. Tap a product to see where it is deployed across your machines.',
       tabIndex: 2,
     ),
-  ]);
+  );
 
   if (can('products')) {
-    steps.add(
+    steps.addAll([
       const TutorialStep(
         kicker: 'Products tab',
         icon: Icons.add_shopping_cart,
@@ -80,8 +130,6 @@ List<TutorialStep> buildAppGuidedTourSteps(AuthUser? user) {
         body: 'Tap + to create a product with cost, price, SKU, and age-verification settings if needed.',
         tabIndex: 2,
       ),
-    );
-    steps.add(
       const TutorialStep(
         kicker: 'Products tab',
         icon: Icons.edit_note_outlined,
@@ -89,7 +137,7 @@ List<TutorialStep> buildAppGuidedTourSteps(AuthUser? user) {
         body: 'Use the checklist icon to select multiple products and update active status or age rules in one go.',
         tabIndex: 2,
       ),
-    );
+    ]);
   }
 
   if (can('sales')) {
@@ -157,7 +205,7 @@ List<TutorialStep> buildAppGuidedTourSteps(AuthUser? user) {
     );
   }
 
-  steps.add(
+  steps.addAll([
     const TutorialStep(
       kicker: 'Support',
       icon: Icons.support_agent_outlined,
@@ -165,43 +213,40 @@ List<TutorialStep> buildAppGuidedTourSteps(AuthUser? user) {
       body: 'The support icon in the top bar opens tickets and chat with VMFS support anytime.',
       tabIndex: 0,
     ),
-  );
-
-  steps.add(
     const TutorialStep(
       kicker: 'You’re ready',
       icon: Icons.check_circle_outline,
       title: 'Tour complete',
-      body: 'Explore each tab on your own. Replay this tour anytime from More → Guided app tour.',
+      body: 'You’re all set. This tour won’t show again — explore the app and manage your machines.',
       tabIndex: 0,
     ),
-  );
+  ]);
 
   return steps;
 }
 
-Future<void> showAppGuidedTour(
+/// Shows the merged tutorial once per app install (first login after QR APK install).
+Future<void> maybeShowFirstInstallTutorial(
   BuildContext context,
   WidgetRef ref, {
   required AuthUser? user,
-  bool force = false,
 }) async {
   final storage = ref.read(onboardingStorageProvider);
 
-  if (!force && await storage.hasCompleted(OnboardingStorage.appGuidedTourKey)) {
+  if (await storage.hasCompletedFirstInstallTutorial()) {
     return;
   }
   if (!context.mounted) return;
 
   await showVmfsTutorialSheet(
     context,
-    title: 'Guided app tour',
-    steps: buildAppGuidedTourSteps(user),
+    title: 'Getting started',
+    steps: buildFirstInstallTutorialSteps(user),
     onStepVisible: (step) {
       if (step.tabIndex != null) {
         ref.read(appShellTabIndexProvider.notifier).state = step.tabIndex!;
       }
     },
-    onFinished: () => storage.markCompleted(OnboardingStorage.appGuidedTourKey),
+    onFinished: storage.markFirstInstallTutorialCompleted,
   );
 }

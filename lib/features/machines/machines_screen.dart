@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/onboarding/machine_onboarding.dart';
-import '../../core/storage/onboarding_storage.dart';
 import '../../core/utils/debouncer.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/bulk_edit_sheet.dart';
@@ -211,25 +209,6 @@ class MachineDetailScreen extends ConsumerStatefulWidget {
 
 class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
   bool _restocking = false;
-  bool _detailTutorialQueued = false;
-
-  Future<void> _showDetailTutorial({required bool canManageSlots, bool force = false}) async {
-    await maybeShowMachineDetailOnboarding(
-      context,
-      ref.read(onboardingStorageProvider),
-      canManageSlots: canManageSlots,
-      force: force,
-    );
-  }
-
-  void _queueDetailTutorial({required bool canManageSlots}) {
-    if (_detailTutorialQueued) return;
-    _detailTutorialQueued = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _showDetailTutorial(canManageSlots: canManageSlots);
-    });
-  }
 
   Future<void> _restockAll() async {
     final ok = await showDialog<bool>(
@@ -275,11 +254,6 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
       appBar: AppBar(
         title: const Text('Machine'),
         actions: [
-          IconButton(
-            tooltip: 'Machine tutorial',
-            onPressed: () => _showDetailTutorial(canManageSlots: canManageSlots, force: true),
-            icon: const Icon(Icons.help_outline),
-          ),
           if (canEdit)
             IconButton(
               tooltip: 'Edit machine',
@@ -307,8 +281,6 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
           onRetry: () => ref.invalidate(machineDetailProvider(widget.machineId)),
         ),
         data: (machine) {
-          _queueDetailTutorial(canManageSlots: canManageSlots);
-
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
