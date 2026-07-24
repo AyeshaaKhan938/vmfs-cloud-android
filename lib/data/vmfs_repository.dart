@@ -310,11 +310,13 @@ class VmfsRepository {
     required int machineId,
     required String issueDescription,
     String priority = 'normal',
+    String issueType = 'machine_issue',
   }) async {
     final data = await _api.post('/support-tickets', body: {
       'machine_id': machineId,
       'issue_description': issueDescription,
       'priority': priority,
+      'issue_type': issueType,
     });
     return SupportTicketSummary.fromJson(data['ticket'] as Map<String, dynamic>);
   }
@@ -524,6 +526,16 @@ class VmfsRepository {
   }
 
   Future<void> deleteSupportTicket(int id) => _api.delete('/support-tickets/$id');
+
+  Future<SupportTicketDetail> requestSupportLiveChat(int id) async {
+    final data = await _api.post('/support-tickets/$id/request-live-chat');
+    return SupportTicketDetail.fromJson(data);
+  }
+
+  Future<SupportLiveChatStatus> fetchSupportLiveChatStatus() async {
+    final data = await _api.get('/support/live-chat/status');
+    return SupportLiveChatStatus.fromJson(data);
+  }
 
   Future<void> updateSupportTicket(int id, {String? status}) async {
     await _api.patch('/support-tickets/$id', body: {

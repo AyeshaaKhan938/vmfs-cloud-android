@@ -14,6 +14,7 @@ import '../coupons/coupons_screens.dart';
 import '../reports/reports_screen.dart';
 import '../profile/profile_screen.dart';
 import '../team/team_screen.dart';
+import '../support/support_screen.dart';
 import '../wallet/wallet_screen.dart';
 import '../system/system_screens.dart';
 
@@ -292,6 +293,15 @@ class MenuHubScreen extends ConsumerWidget {
         _Section(
           title: 'Legal & support',
           children: [
+            if (can('work_orders'))
+              _MenuTile(
+                icon: Icons.support_agent_rounded,
+                title: 'Support tickets',
+                subtitle: 'Track issues, chat with VMFS support',
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const SupportScreen()),
+                ),
+              ),
             _MenuTile(
               icon: Icons.help_outline,
               title: 'Help & FAQ',

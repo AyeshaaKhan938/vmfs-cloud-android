@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/vmfs_repository.dart';
@@ -35,13 +37,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   Future<void> _bootstrap() async {
     try {
-      await _repository.warmSession();
-      final user = await _repository.restoreSession();
+      await _repository.warmSession().timeout(const Duration(seconds: 5));
+      final user = await _repository.restoreSession().timeout(const Duration(seconds: 20));
       state = AuthState(
         user: user,
         isLoading: false,
         sessionReady: user != null,
       );
+    } on TimeoutException {
+      state = const AuthState(isLoading: false);
     } catch (_) {
       state = const AuthState(isLoading: false);
     }

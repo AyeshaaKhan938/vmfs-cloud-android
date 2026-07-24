@@ -18,7 +18,7 @@ class VmfsLoginBrandPanel extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF002244), Color(0xFF003D7A), Color(0xFF0066CC)],
+          colors: VmfsColors.brandGradient,
         ),
         boxShadow: [
           BoxShadow(

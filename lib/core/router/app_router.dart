@@ -15,6 +15,7 @@ import '../../features/products/product_detail_screen.dart';
 import '../../features/products/product_form_screen.dart';
 import '../../features/shell/app_shell.dart';
 import '../../features/support/support_ticket_detail_screen.dart';
+import '../../features/support/support_ticket_form_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final refresh = _AuthRefreshListenable(ref);
@@ -99,6 +100,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/orders/:id',
         builder: (_, state) => OrderDetailScreen(orderId: int.parse(state.pathParameters['id']!)),
+      ),
+      GoRoute(
+        path: '/support/new',
+        builder: (_, state) => SupportTicketFormScreen(
+          initialIssueType: state.uri.queryParameters['issue_type'],
+        ),
       ),
       GoRoute(
         path: '/support/:id',

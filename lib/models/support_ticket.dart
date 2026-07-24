@@ -5,21 +5,39 @@ class SupportTicketSummary {
     required this.status,
     required this.statusLabel,
     required this.priority,
+    required this.priorityLabel,
+    required this.issueType,
+    required this.issueTypeLabel,
     required this.issueDescription,
     required this.submittedAt,
+    required this.resolvedAt,
+    required this.lastMessageAt,
     required this.machineName,
+    required this.machineId,
+    required this.liveChatActive,
+    required this.isOpen,
+    required this.messagesCount,
   });
 
   factory SupportTicketSummary.fromJson(Map<String, dynamic> json) {
     return SupportTicketSummary(
       id: json['id'] as int,
       workOrderNumber: json['work_order_number'] as String? ?? '',
-      status: json['status'] as String? ?? 'open',
+      status: json['status'] as String? ?? 'unprocessed',
       statusLabel: json['status_label'] as String? ?? 'Open',
       priority: json['priority'] as String? ?? 'normal',
+      priorityLabel: json['priority_label'] as String? ?? 'Normal',
+      issueType: json['issue_type'] as String? ?? 'machine_issue',
+      issueTypeLabel: json['issue_type_label'] as String? ?? 'Machine issue',
       issueDescription: json['issue_description'] as String? ?? '',
       submittedAt: json['submitted_at'] as String? ?? '',
+      resolvedAt: json['resolved_at'] as String? ?? '',
+      lastMessageAt: json['last_message_at'] as String? ?? '',
       machineName: json['machine_name'] as String? ?? '—',
+      machineId: json['machine_id'] as int?,
+      liveChatActive: json['live_chat_active'] as bool? ?? false,
+      isOpen: json['is_open'] as bool? ?? true,
+      messagesCount: json['messages_count'] as int? ?? 0,
     );
   }
 
@@ -28,9 +46,18 @@ class SupportTicketSummary {
   final String status;
   final String statusLabel;
   final String priority;
+  final String priorityLabel;
+  final String issueType;
+  final String issueTypeLabel;
   final String issueDescription;
   final String submittedAt;
+  final String resolvedAt;
+  final String lastMessageAt;
   final String machineName;
+  final int? machineId;
+  final bool liveChatActive;
+  final bool isOpen;
+  final int messagesCount;
 }
 
 class SupportTicketMessage {
@@ -62,7 +89,6 @@ class SupportTicketMessage {
 class SupportTicketDetail {
   const SupportTicketDetail({
     required this.summary,
-    required this.liveChatActive,
     required this.messages,
   });
 
@@ -70,7 +96,6 @@ class SupportTicketDetail {
     final ticketJson = json['ticket'] as Map<String, dynamic>;
     return SupportTicketDetail(
       summary: SupportTicketSummary.fromJson(ticketJson),
-      liveChatActive: ticketJson['live_chat_active'] as bool? ?? false,
       messages: (ticketJson['messages'] as List<dynamic>? ?? [])
           .map((e) => SupportTicketMessage.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -78,6 +103,25 @@ class SupportTicketDetail {
   }
 
   final SupportTicketSummary summary;
-  final bool liveChatActive;
   final List<SupportTicketMessage> messages;
+}
+
+class SupportLiveChatStatus {
+  const SupportLiveChatStatus({
+    required this.agentsAvailable,
+    required this.agentsOnlineCount,
+    required this.liveChatWaitingCount,
+  });
+
+  factory SupportLiveChatStatus.fromJson(Map<String, dynamic> json) {
+    return SupportLiveChatStatus(
+      agentsAvailable: json['agents_available'] as bool? ?? false,
+      agentsOnlineCount: json['agents_online_count'] as int? ?? 0,
+      liveChatWaitingCount: json['live_chat_waiting_count'] as int? ?? 0,
+    );
+  }
+
+  final bool agentsAvailable;
+  final int agentsOnlineCount;
+  final int liveChatWaitingCount;
 }

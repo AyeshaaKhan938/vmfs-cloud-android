@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'secure_storage.dart';
+
 /// Persists first-run onboarding flags (separate from auth token).
 class OnboardingStorage {
   OnboardingStorage({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+      : _storage = storage ?? vmfsSecureStorage;
 
   /// Shown once after first login on a fresh app install (e.g. APK from QR page).
   static const firstInstallTutorialKey = 'vmfs_first_install_tutorial_v1';

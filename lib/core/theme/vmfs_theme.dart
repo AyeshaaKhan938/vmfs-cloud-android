@@ -77,6 +77,11 @@ abstract final class VmfsTheme {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
       ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: VmfsColors.primary,
+        foregroundColor: Colors.white,
+        extendedTextStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+      ),
     );
   }
 }

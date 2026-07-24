@@ -25,8 +25,12 @@ class VmfsHeroBanner extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFFBEB), Colors.white, VmfsColors.background],
+        gradient: LinearGradient(
+          colors: [
+            VmfsColors.primaryLight,
+            Colors.white,
+            VmfsColors.background,
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
