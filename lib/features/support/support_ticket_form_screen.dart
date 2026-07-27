@@ -47,6 +47,73 @@ class _SupportTicketFormScreenState extends ConsumerState<SupportTicketFormScree
   SupportIssueTypeOption get _selectedIssue =>
       SupportTicketCatalog.issueTypeFor(_issueType);
 
+  String _machineLabel(MachineSummary machine) =>
+      SupportTicketUi.machineLabel(machine.machineName, machine.machineNumber);
+
+  Future<void> _pickMachine(List<MachineSummary> machines) async {
+    final picked = await showModalBottomSheet<int>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) {
+        return SafeArea(
+          child: DraggableScrollableSheet(
+            expand: false,
+            initialChildSize: 0.45,
+            minChildSize: 0.25,
+            maxChildSize: 0.85,
+            builder: (context, scrollController) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                    child: Text(
+                      'Select affected machine',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: machines.length,
+                      itemBuilder: (context, index) {
+                        final machine = machines[index];
+                        final selected = machine.id == _machineId;
+
+                        return ListTile(
+                          leading: Icon(
+                            Icons.memory_rounded,
+                            color: selected ? VmfsColors.primary : VmfsColors.textSecondary,
+                          ),
+                          title: Text(machine.machineName),
+                          subtitle: Text(
+                            machine.machineNumber,
+                            style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                          ),
+                          trailing: selected
+                              ? const Icon(Icons.check_circle, color: VmfsColors.primary)
+                              : null,
+                          onTap: () => Navigator.pop(context, machine.id),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() => _machineId = picked);
+    }
+  }
+
   void _applyTemplate(String template) {
     _descriptionController.text = template;
     setState(() {});
@@ -163,22 +230,41 @@ class _SupportTicketFormScreenState extends ConsumerState<SupportTicketFormScree
                   );
                 }),
                 const SizedBox(height: 8),
-                DropdownButtonFormField<int>(
-                  value: _machineId,
-                  decoration: const InputDecoration(
-                    labelText: 'Affected machine',
-                    prefixIcon: Icon(Icons.memory_rounded),
-                  ),
-                  items: machines
-                      .map(
-                        (machine) => DropdownMenuItem(
-                          value: machine.id,
-                          child: Text('${machine.machineName} (${machine.machineNumber})'),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: (value) => setState(() => _machineId = value),
+                FormField<int>(
+                  initialValue: _machineId,
                   validator: (value) => value == null ? 'Select a machine' : null,
+                  builder: (field) {
+                    final selectedId = field.value ?? _machineId ?? machines.first.id;
+                    final selectedMachine = machines.firstWhere((machine) => machine.id == selectedId);
+
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () async {
+                        await _pickMachine(machines);
+                        field.didChange(_machineId);
+                      },
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          labelText: 'Affected machine',
+                          prefixIcon: const Icon(Icons.memory_rounded),
+                          errorText: field.errorText,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                _machineLabel(selectedMachine),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                            ),
+                            const Icon(Icons.arrow_drop_down),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 16),
                 const Text(

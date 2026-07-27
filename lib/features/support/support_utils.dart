@@ -152,6 +152,17 @@ abstract final class SupportTicketUi {
     return DateFormat.yMMMd().add_jm().format(local);
   }
 
+  static String machineLabel(String machineName, String machineNumber) {
+    final name = machineName.trim();
+    final number = machineNumber.trim();
+
+    if (number.isEmpty) {
+      return name;
+    }
+
+    return '$name ($number)';
+  }
+
   static String relativeSubmitted(String? iso) {
     if (iso == null || iso.isEmpty) {
       return '';
