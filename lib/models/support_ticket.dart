@@ -1,3 +1,17 @@
+bool _jsonBool(dynamic value, {bool defaultValue = false}) {
+  if (value is bool) {
+    return value;
+  }
+  if (value is int) {
+    return value != 0;
+  }
+  if (value is String) {
+    return value == '1' || value.toLowerCase() == 'true';
+  }
+
+  return defaultValue;
+}
+
 class SupportTicketSummary {
   const SupportTicketSummary({
     required this.id,
@@ -35,8 +49,8 @@ class SupportTicketSummary {
       lastMessageAt: json['last_message_at'] as String? ?? '',
       machineName: json['machine_name'] as String? ?? '—',
       machineId: json['machine_id'] as int?,
-      liveChatActive: json['live_chat_active'] as bool? ?? false,
-      isOpen: json['is_open'] as bool? ?? true,
+      liveChatActive: _jsonBool(json['live_chat_active']),
+      isOpen: _jsonBool(json['is_open'], defaultValue: true),
       messagesCount: json['messages_count'] as int? ?? 0,
     );
   }
@@ -74,7 +88,7 @@ class SupportTicketMessage {
       id: json['id'] as int,
       authorName: json['author_name'] as String? ?? 'User',
       body: json['body'] as String? ?? '',
-      isStaffReply: json['is_staff_reply'] as bool? ?? false,
+      isStaffReply: _jsonBool(json['is_staff_reply']),
       createdAt: json['created_at'] as String? ?? '',
     );
   }
@@ -115,7 +129,7 @@ class SupportLiveChatStatus {
 
   factory SupportLiveChatStatus.fromJson(Map<String, dynamic> json) {
     return SupportLiveChatStatus(
-      agentsAvailable: json['agents_available'] as bool? ?? false,
+      agentsAvailable: _jsonBool(json['agents_available']),
       agentsOnlineCount: json['agents_online_count'] as int? ?? 0,
       liveChatWaitingCount: json['live_chat_waiting_count'] as int? ?? 0,
     );

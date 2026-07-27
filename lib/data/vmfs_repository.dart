@@ -505,11 +505,20 @@ class VmfsRepository {
     await _api.post('/wallet/recharge', body: {'amount': amount});
   }
 
-  Future<void> updateProfile({String? name, String? timezone, String? phone}) async {
+  Future<void> updateProfile({
+    String? name,
+    String? timezone,
+    String? phone,
+    String? cloudNotificationEmail,
+    bool clearCloudNotificationEmail = false,
+  }) async {
     await _api.patch('/profile', body: {
       if (name != null) 'name': name,
       if (timezone != null) 'timezone': timezone,
       if (phone != null) 'phone': phone,
+      if (clearCloudNotificationEmail) 'cloud_notification_email': null,
+      if (cloudNotificationEmail != null && !clearCloudNotificationEmail)
+        'cloud_notification_email': cloudNotificationEmail,
     });
   }
 

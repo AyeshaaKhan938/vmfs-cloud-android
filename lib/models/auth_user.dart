@@ -11,6 +11,8 @@ class AuthUser {
     required this.hasFullAccess,
     this.walletBalance,
     this.timezone,
+    this.cloudNotificationEmail,
+    this.preferredNotificationEmail,
   });
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,8 @@ class AuthUser {
       hasFullAccess: json['has_full_access'] as bool? ?? false,
       walletBalance: (json['wallet_balance'] as num?)?.toDouble(),
       timezone: json['timezone'] as String?,
+      cloudNotificationEmail: json['cloud_notification_email'] as String?,
+      preferredNotificationEmail: json['preferred_notification_email'] as String?,
     );
   }
 
@@ -42,6 +46,8 @@ class AuthUser {
   final bool hasFullAccess;
   final double? walletBalance;
   final String? timezone;
+  final String? cloudNotificationEmail;
+  final String? preferredNotificationEmail;
 
   bool canAccess(String feature) => hasFullAccess || features.contains(feature);
 }
