@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../features/auth/auth_provider.dart';
 import '../../features/shell/app_shell.dart';
 import '../../models/auth_user.dart';
 import '../storage/onboarding_storage.dart';
@@ -238,6 +239,18 @@ Future<void> maybeShowFirstInstallTutorial(
   }
   if (!context.mounted) return;
 
+  await showFirstInstallTutorial(context, ref, user: user);
+}
+
+/// Replays the app tab tour (Profile → Replay app tour, or after clearing onboarding storage).
+Future<void> showFirstInstallTutorial(
+  BuildContext context,
+  WidgetRef ref, {
+  required AuthUser? user,
+}) async {
+  final storage = ref.read(onboardingStorageProvider);
+  if (!context.mounted) return;
+
   await showVmfsTutorialSheet(
     context,
     title: 'Getting started',
@@ -249,4 +262,15 @@ Future<void> maybeShowFirstInstallTutorial(
     },
     onFinished: storage.markFirstInstallTutorialCompleted,
   );
+}
+
+Future<void> replayFirstInstallTutorial(
+  BuildContext context,
+  WidgetRef ref,
+) async {
+  final storage = ref.read(onboardingStorageProvider);
+  await storage.resetFirstInstallTutorial();
+  if (!context.mounted) return;
+
+  await showFirstInstallTutorial(context, ref, user: ref.read(authProvider).user);
 }

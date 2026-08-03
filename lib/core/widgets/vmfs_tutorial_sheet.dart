@@ -131,7 +131,6 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
               itemBuilder: (context, index) {
                 final item = widget.steps[index];
                 return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (item.kicker != null) ...[
                       Text(
@@ -157,10 +156,14 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
                       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      item.body,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 15, height: 1.45, color: Color(0xFF555555)),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          item.body,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 15, height: 1.45, color: Color(0xFF555555)),
+                        ),
+                      ),
                     ),
                   ],
                 );

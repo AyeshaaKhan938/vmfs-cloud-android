@@ -37,7 +37,7 @@ Future<void> maybeShowMachineOnboarding({
 
   await showVmfsTutorialSheet(
     context,
-    title: 'Setup: ${profile.label}',
+    title: profile.label,
     steps: tutorialStepsFromProfile(profile),
     onFinished: () => storage.markMachineOnboardingCompleted(machineId, profile.profileKey),
   );

@@ -55,6 +55,16 @@ class MachineOnboardingStep {
 
 IconData machineOnboardingIcon(String name) {
   return switch (name) {
+    'local_shipping' => Icons.local_shipping_outlined,
+    'build' => Icons.build_outlined,
+    'key' => Icons.key_outlined,
+    'power' => Icons.power_outlined,
+    'straighten' => Icons.straighten,
+    'check_circle' => Icons.check_circle_outline,
+    'settings' => Icons.settings_outlined,
+    'touch_app' => Icons.touch_app_outlined,
+    'shopping_cart' => Icons.shopping_cart_outlined,
+    'shopping_bag' => Icons.shopping_bag_outlined,
     'grid_view' => Icons.grid_view_rounded,
     'inventory' => Icons.inventory_2_outlined,
     'campaign' => Icons.campaign_outlined,
