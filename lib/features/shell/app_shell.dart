@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/feedback/vmfs_tap_feedback.dart';
 import '../../core/onboarding/app_onboarding.dart';
 import '../../core/widgets/vmfs_brand_panel.dart';
 import '../auth/auth_provider.dart';
@@ -58,6 +59,7 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   void _onTabSelected(int index) {
     if (ref.read(appShellTabIndexProvider) == index) return;
+    VmfsTapFeedback.play();
     ref.read(appShellTabIndexProvider.notifier).state = index;
   }
 

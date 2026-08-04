@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/legal/legal_content.dart';
 import '../../core/theme/vmfs_colors.dart';
+import '../../core/widgets/vmfs_tap.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../legal/about_screen.dart';
 import '../legal/help_screen.dart';
@@ -79,14 +80,15 @@ class MenuHubScreen extends ConsumerWidget {
                   MaterialPageRoute<void>(builder: (_) => const MachineAlarmsScreen()),
                 ),
               ),
-              _MenuTile(
-                icon: Icons.verified_user_outlined,
-                title: 'Age verification',
-                subtitle: 'Recent ID verification sessions',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const AgeVerificationSessionsScreen()),
+              if (user?.hasFullAccess == true)
+                _MenuTile(
+                  icon: Icons.verified_user_outlined,
+                  title: 'Age verification',
+                  subtitle: 'Review ID sessions (admin)',
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(builder: (_) => const AgeVerificationSessionsScreen()),
+                  ),
                 ),
-              ),
               _MenuTile(
                 icon: Icons.account_balance_outlined,
                 title: 'Finance groups',
@@ -396,12 +398,14 @@ class _MenuTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: VmfsColors.primaryDark),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
-      trailing: const Icon(Icons.chevron_right),
+    return VmfsTap(
       onTap: onTap,
+      child: ListTile(
+        leading: Icon(icon, color: VmfsColors.primaryDark),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
+        subtitle: subtitle != null ? Text(subtitle!) : null,
+        trailing: const Icon(Icons.chevron_right),
+      ),
     );
   }
 }

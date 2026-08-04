@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'vmfs_colors.dart';
@@ -81,6 +82,14 @@ abstract final class VmfsTheme {
         backgroundColor: VmfsColors.primary,
         foregroundColor: Colors.white,
         extendedTextStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+      ),
+      splashFactory: InkSparkle.splashFactory,
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
       ),
     );
   }
