@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/widgets/vmfs_interactive.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../data/vmfs_repository.dart';
 import '../auth/auth_provider.dart';
@@ -42,12 +43,12 @@ class OrdersScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final order = items[index];
               return RepaintBoundary(
-                child: Card(
+                child: VmfsTappableCard(
+                  onTap: () => context.push('/orders/${order.id}'),
                   child: ListTile(
                   title: Text(order.productName, style: const TextStyle(fontWeight: FontWeight.w700)),
                   subtitle: Text('Machine ${order.machineNo} · ${order.createdAt}'),
                   trailing: Text(currency.format(order.amount), style: const TextStyle(fontWeight: FontWeight.w700)),
-                  onTap: () => context.push('/orders/${order.id}'),
                 ),
               ),
               );

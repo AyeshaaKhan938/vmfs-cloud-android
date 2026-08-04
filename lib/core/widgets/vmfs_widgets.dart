@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/vmfs_colors.dart';
+import 'vmfs_interactive.dart';
+import 'vmfs_tap.dart';
 
 class VmfsHeroBanner extends StatelessWidget {
   const VmfsHeroBanner({
@@ -102,11 +104,12 @@ class VmfsStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+    return VmfsTap(
+      enabled: onTap != null,
+      onTap: onTap,
+      borderRadius: 14,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -213,7 +216,7 @@ class VmfsErrorView extends StatelessWidget {
             Text(message, textAlign: TextAlign.center),
             if (onRetry != null) ...[
               const SizedBox(height: 16),
-              OutlinedButton(onPressed: onRetry, child: const Text('Try again')),
+              VmfsOutlinedButton(onPressed: onRetry, child: const Text('Try again')),
             ],
           ],
         ),

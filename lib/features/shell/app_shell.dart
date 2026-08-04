@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/feedback/vmfs_tap_feedback.dart';
+import '../../core/router/vmfs_page_transitions.dart';
 import '../../core/onboarding/app_onboarding.dart';
 import '../../core/widgets/vmfs_brand_panel.dart';
 import '../auth/auth_provider.dart';
@@ -11,6 +12,7 @@ import '../menu/menu_hub_screen.dart';
 import '../orders/orders_screen.dart';
 import '../products/products_screen.dart';
 import '../support/support_screen.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 final appShellTabIndexProvider = StateProvider<int>((ref) => 0);
 
@@ -70,16 +72,29 @@ class _AppShellState extends ConsumerState<AppShell> {
       appBar: AppBar(
         title: const VmfsAppBarTitle(),
         actions: [
-          IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const SupportScreen()),
-            ),
+          VmfsIconButton(
+            onPressed: () => context.pushVmfsScreen(const SupportScreen()),
             icon: const Icon(Icons.support_agent_outlined),
             tooltip: 'Support',
           ),
         ],
       ),
-      body: _tabWidget(index),
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 240),
+        switchInCurve: Curves.easeOutCubic,
+        switchOutCurve: Curves.easeInCubic,
+        transitionBuilder: (child, animation) {
+          final slide = Tween<Offset>(begin: const Offset(0.03, 0), end: Offset.zero).animate(animation);
+          return FadeTransition(
+            opacity: animation,
+            child: SlideTransition(position: slide, child: child),
+          );
+        },
+        child: KeyedSubtree(
+          key: ValueKey<int>(index),
+          child: _tabWidget(index),
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: index,
         onDestinationSelected: _onTabSelected,

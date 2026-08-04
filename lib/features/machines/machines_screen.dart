@@ -6,6 +6,7 @@ import '../../core/utils/debouncer.dart';
 import '../../core/onboarding/machine_onboarding.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/bulk_edit_sheet.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../auth/auth_provider.dart';
 import '../../models/machine.dart';
@@ -89,7 +90,7 @@ class _MachinesScreenState extends ConsumerState<MachinesScreen> {
               ),
               if (canBulkEdit) ...[
                 const SizedBox(width: 8),
-                IconButton(
+                VmfsIconButton(
                   tooltip: _selectionMode ? 'Cancel selection' : 'Select for bulk edit',
                   onPressed: () => setState(() {
                     _selectionMode = !_selectionMode;
@@ -100,7 +101,7 @@ class _MachinesScreenState extends ConsumerState<MachinesScreen> {
               ],
               if (canCreate) ...[
                 const SizedBox(width: 8),
-                IconButton.filled(
+                VmfsIconButton.filled(
                   tooltip: 'Add machine',
                   onPressed: () => context.push('/machines/new'),
                   icon: const Icon(Icons.add),
@@ -114,7 +115,7 @@ class _MachinesScreenState extends ConsumerState<MachinesScreen> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: FilledButton.icon(
+              child: VmfsFilledButton.icon(
                 onPressed: _bulkEdit,
                 icon: const Icon(Icons.edit_note_outlined),
                 label: Text('Bulk edit (${_selectedIds.length})'),
@@ -146,8 +147,21 @@ class _MachinesScreenState extends ConsumerState<MachinesScreen> {
                   itemBuilder: (context, index) {
                     final machine = items[index];
                     return RepaintBoundary(
-                      child: Card(
+                      child: VmfsTappableCard(
                         color: _selectedIds.contains(machine.id) ? VmfsColors.primaryLight.withValues(alpha: 0.35) : null,
+                        onTap: () {
+                          if (_selectionMode) {
+                            _toggleSelection(machine.id);
+                          } else {
+                            context.push('/machines/${machine.id}');
+                          }
+                        },
+                        onLongPress: canBulkEdit && !_selectionMode
+                            ? () => setState(() {
+                                  _selectionMode = true;
+                                  _selectedIds.add(machine.id);
+                                })
+                            : null,
                         child: ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         leading: _selectionMode
@@ -168,19 +182,6 @@ class _MachinesScreenState extends ConsumerState<MachinesScreen> {
                           label: machine.isOnline ? 'Online' : 'Offline',
                           color: machine.isOnline ? VmfsColors.success : VmfsColors.textSecondary,
                         ),
-                        onTap: () {
-                          if (_selectionMode) {
-                            _toggleSelection(machine.id);
-                          } else {
-                            context.push('/machines/${machine.id}');
-                          }
-                        },
-                        onLongPress: canBulkEdit && !_selectionMode
-                            ? () => setState(() {
-                                _selectionMode = true;
-                                _selectedIds.add(machine.id);
-                              })
-                            : null,
                       ),
                     ),
                     );
@@ -249,8 +250,8 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
         title: const Text('Restock all slots?'),
         content: const Text('Set current stock to max stock for every slot on this machine.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restock all')),
+          VmfsTextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          VmfsFilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Restock all')),
         ],
       ),
     );
@@ -286,7 +287,7 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
       appBar: AppBar(
         title: const Text('Machine'),
         actions: [
-          IconButton(
+          VmfsIconButton(
             tooltip: 'Machine setup guide',
             onPressed: detail.maybeWhen(
               data: (machine) => () => _runMachineOnboarding(machine, force: true),
@@ -295,7 +296,7 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
             icon: const Icon(Icons.help_outline),
           ),
           if (canEdit)
-            IconButton(
+            VmfsIconButton(
               tooltip: 'Edit machine',
               onPressed: () async {
                 final changed = await context.push<bool>('/machines/${widget.machineId}/edit');
@@ -304,7 +305,7 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
               icon: const Icon(Icons.edit_outlined),
             ),
           if (canManageSlots)
-            IconButton(
+            VmfsIconButton(
               tooltip: 'Add slot',
               onPressed: () async {
                 final changed = await context.push<bool>('/machines/${widget.machineId}/slots/new');

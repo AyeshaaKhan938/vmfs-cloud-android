@@ -6,6 +6,8 @@ import '../../core/widgets/vmfs_widgets.dart';
 import '../auth/auth_provider.dart';
 import 'team_member_form_screen.dart';
 import 'team_utils.dart';
+import '../../core/router/vmfs_page_transitions.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 final teamMembersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   return ref.watch(repositoryProvider).fetchTeamMembers();
@@ -15,11 +17,7 @@ class TeamScreen extends ConsumerWidget {
   const TeamScreen({super.key});
 
   Future<void> _openForm(BuildContext context, WidgetRef ref, {Map<String, dynamic>? member}) async {
-    final saved = await Navigator.of(context).push<bool>(
-      MaterialPageRoute<bool>(
-        builder: (_) => TeamMemberFormScreen(member: member),
-      ),
-    );
+    final saved = await Navigator.of(context).push<bool>(vmfsSlideRoute<bool>(builder: (_) => TeamMemberFormScreen(member: member)));
 
     if (saved == true) {
       ref.invalidate(teamMembersProvider);
@@ -54,7 +52,7 @@ class TeamScreen extends ConsumerWidget {
         title: const Text('Team members'),
         actions: [
           if (canManage)
-            IconButton(
+            VmfsIconButton(
               tooltip: 'Add team member',
               icon: const Icon(Icons.person_add_outlined),
               onPressed: () => _openForm(context, ref),
@@ -62,7 +60,7 @@ class TeamScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: canManage
-          ? FloatingActionButton.extended(
+          ? VmfsFloatingActionButton.extended(
               onPressed: () => _openForm(context, ref),
               icon: const Icon(Icons.add),
               label: const Text('Add member'),
@@ -79,7 +77,7 @@ class TeamScreen extends ConsumerWidget {
                   ? 'Create sub-accounts and choose which features each person can use.'
                   : 'Your account owner manages team members.',
               action: canManage
-                  ? FilledButton.icon(
+                  ? VmfsFilledButton.icon(
                       onPressed: () => _openForm(context, ref),
                       icon: const Icon(Icons.person_add_outlined),
                       label: const Text('Add team member'),

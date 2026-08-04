@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../core/utils/debouncer.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/bulk_edit_sheet.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../data/vmfs_repository.dart';
 import '../auth/auth_provider.dart';
@@ -92,7 +93,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
               ),
               if (canBulkEdit) ...[
                 const SizedBox(width: 8),
-                IconButton(
+                VmfsIconButton(
                   tooltip: _selectionMode ? 'Cancel selection' : 'Select for bulk edit',
                   onPressed: () => setState(() {
                     _selectionMode = !_selectionMode;
@@ -103,7 +104,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
               ],
               if (canCreate) ...[
                 const SizedBox(width: 8),
-                IconButton.filled(
+                VmfsIconButton.filled(
                   tooltip: 'Add product',
                   onPressed: () => context.push('/products/new'),
                   icon: const Icon(Icons.add),
@@ -117,7 +118,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: FilledButton.icon(
+              child: VmfsFilledButton.icon(
                 onPressed: _bulkEdit,
                 icon: const Icon(Icons.edit_note_outlined),
                 label: Text('Bulk edit (${_selectedIds.length})'),
@@ -149,8 +150,21 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                   itemBuilder: (context, index) {
                     final product = items[index];
                     return RepaintBoundary(
-                      child: Card(
+                      child: VmfsTappableCard(
                         color: _selectedIds.contains(product.id) ? VmfsColors.primaryLight.withValues(alpha: 0.35) : null,
+                        onTap: () {
+                          if (_selectionMode) {
+                            _toggleSelection(product.id);
+                          } else {
+                            context.push('/products/${product.id}');
+                          }
+                        },
+                        onLongPress: canBulkEdit && !_selectionMode
+                            ? () => setState(() {
+                                  _selectionMode = true;
+                                  _selectedIds.add(product.id);
+                                })
+                            : null,
                         child: ListTile(
                         leading: _selectionMode
                             ? Checkbox(
@@ -174,19 +188,6 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                             ),
                           ],
                         ),
-                        onTap: () {
-                          if (_selectionMode) {
-                            _toggleSelection(product.id);
-                          } else {
-                            context.push('/products/${product.id}');
-                          }
-                        },
-                        onLongPress: canBulkEdit && !_selectionMode
-                            ? () => setState(() {
-                                _selectionMode = true;
-                                _selectedIds.add(product.id);
-                              })
-                            : null,
                       ),
                     ),
                     );

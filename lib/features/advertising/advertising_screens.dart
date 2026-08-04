@@ -8,6 +8,8 @@ import '../../core/widgets/vmfs_resource_list.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../data/vmfs_repository.dart';
 import '../auth/auth_provider.dart';
+import '../../core/router/vmfs_page_transitions.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 final advertisementsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   return ref.watch(repositoryProvider).fetchAdvertisements();
@@ -83,7 +85,7 @@ class AdvertisementGroupsScreen extends ConsumerWidget {
         title: const Text('Advertisement groups'),
         actions: [
           if (canManage)
-            IconButton(
+            VmfsIconButton(
               tooltip: 'Add group',
               onPressed: () async {
                 final name = await _promptName(context, title: 'New advertisement group');
@@ -116,15 +118,11 @@ class AdvertisementGroupsScreen extends ConsumerWidget {
               title: Text(item['name'] as String? ?? 'Group'),
               subtitle: Text('${item['advertisement_count'] ?? 0} ads · Screensaver / Top / External'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => AdvertisementGroupEditorScreen(
+              onTap: () => context.pushVmfsScreen(AdvertisementGroupEditorScreen(
                     groupId: item['id'] as int,
                     initialName: item['name'] as String? ?? '',
                     canManage: canManage,
-                  ),
-                ),
-              ),
+                  )),
             ),
           ),
         ),
@@ -230,7 +228,7 @@ class _AdvertisementGroupEditorScreenState extends ConsumerState<AdvertisementGr
                         ],
                       ),
                     ),
-                    FilledButton(
+                    VmfsFilledButton(
                       onPressed: () => Navigator.pop(context, selected),
                       child: const Text('Done'),
                     ),
@@ -298,7 +296,7 @@ class _AdvertisementGroupEditorScreenState extends ConsumerState<AdvertisementGr
         title: const Text('Advertisement group'),
         actions: [
           if (widget.canManage)
-            IconButton(
+            VmfsIconButton(
               onPressed: _saving ? null : _save,
               icon: _saving
                   ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
@@ -358,7 +356,7 @@ class _SlotCard extends StatelessWidget {
                   child: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
                 ),
                 if (onEdit != null)
-                  TextButton(onPressed: onEdit, child: const Text('Edit ads')),
+                  VmfsTextButton(onPressed: onEdit, child: const Text('Edit ads')),
               ],
             ),
             const SizedBox(height: 8),
@@ -394,7 +392,7 @@ class AdvertisementTagsScreen extends ConsumerWidget {
         title: const Text('Advertisement tags'),
         actions: [
           if (canManage)
-            IconButton(
+            VmfsIconButton(
               tooltip: 'Add tag',
               onPressed: () async {
                 final name = await _promptName(context, title: 'New tag');
@@ -455,8 +453,8 @@ Future<String?> _promptName(BuildContext context, {required String title}) async
         autofocus: true,
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-        FilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('Save')),
+        VmfsTextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+        VmfsFilledButton(onPressed: () => Navigator.pop(ctx, controller.text.trim()), child: const Text('Save')),
       ],
     ),
   );
@@ -506,7 +504,7 @@ Future<Set<int>?> _pickAdvertisements(
                       ],
                     ),
                   ),
-                  FilledButton(onPressed: () => Navigator.pop(context, selected), child: const Text('Save')),
+                  VmfsFilledButton(onPressed: () => Navigator.pop(context, selected), child: const Text('Save')),
                 ],
               ),
             ),

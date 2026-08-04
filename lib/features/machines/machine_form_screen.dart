@@ -8,6 +8,7 @@ import '../../core/utils/debouncer.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../models/machine_onboarding_profile.dart';
 import '../auth/auth_provider.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class MachineFormScreen extends ConsumerStatefulWidget {
   const MachineFormScreen({super.key, this.machineId});
@@ -244,7 +245,7 @@ class _MachineFormScreenState extends ConsumerState<MachineFormScreen> {
               onChanged: (v) => setState(() => _ageVerification = v),
             ),
             const SizedBox(height: 24),
-            FilledButton(
+            VmfsFilledButton(
               onPressed: _loading ? null : _submit,
               child: _loading
                   ? const SizedBox(

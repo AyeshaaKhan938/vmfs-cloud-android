@@ -7,6 +7,8 @@ import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_brand_panel.dart';
 import '../legal/legal_document_screen.dart';
 import 'auth_provider.dart';
+import '../../core/router/vmfs_page_transitions.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -66,11 +68,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   void _openLegal(String title, String body) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => LegalDocumentScreen(title: title, body: body),
-      ),
-    );
+    context.pushVmfsScreen(LegalDocumentScreen(title: title, body: body));
   }
 
   @override
@@ -80,7 +78,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
+        leading: VmfsIconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/login'),
         ),
@@ -150,7 +148,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: const Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
+                            suffixIcon: VmfsIconButton(
                               onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                               icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
                             ),
@@ -170,7 +168,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           decoration: InputDecoration(
                             labelText: 'Confirm password',
                             prefixIcon: const Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
+                            suffixIcon: VmfsIconButton(
                               onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
                               icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
                             ),
@@ -215,7 +213,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     Text(error, style: const TextStyle(color: VmfsColors.danger)),
                   ],
                   const SizedBox(height: 12),
-                  ElevatedButton(
+                  VmfsElevatedButton(
                     onPressed: isLoading ? null : _submit,
                     child: isLoading
                         ? const SizedBox(
@@ -226,7 +224,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         : const Text('Create account'),
                   ),
                   const SizedBox(height: 8),
-                  TextButton(
+                  VmfsTextButton(
                     onPressed: () => context.go('/login'),
                     child: const Text('Already have an account? Sign in'),
                   ),

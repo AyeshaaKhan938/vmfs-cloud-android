@@ -9,6 +9,7 @@ import '../../core/widgets/vmfs_brand_panel.dart';
 import '../legal/help_screen.dart';
 import '../legal/legal_document_screen.dart';
 import 'auth_provider.dart';
+import '../../core/router/vmfs_page_transitions.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -50,11 +51,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _openLegal(String title, String body) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => LegalDocumentScreen(title: title, body: body),
-      ),
-    );
+    context.pushVmfsScreen(LegalDocumentScreen(title: title, body: body));
   }
 
   @override
@@ -153,9 +150,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 12),
                     TextButton(
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(builder: (_) => const HelpScreen()),
-                      ),
+                      onPressed: () => context.pushVmfsScreen(const HelpScreen()),
                       child: const Text('Help & support'),
                     ),
                     const SizedBox(height: 8),

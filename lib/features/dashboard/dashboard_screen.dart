@@ -6,12 +6,14 @@ import '../../core/network/api_exception.dart';
 import '../../core/onboarding/app_onboarding.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_logo.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../models/dashboard.dart';
 import '../auth/auth_provider.dart';
 import '../shell/app_shell.dart';
 import '../support/support_screen.dart';
 import '../wallet/wallet_screen.dart';
+import '../../core/router/vmfs_page_transitions.dart';
 
 final dashboardProvider = FutureProvider.autoDispose<DashboardStats>((ref) async {
   final auth = ref.read(authProvider);
@@ -72,7 +74,8 @@ class DashboardScreen extends ConsumerWidget {
                 leading: const VmfsLogo(height: 44, compact: true),
               ),
               const SizedBox(height: 12),
-              Card(
+              VmfsTappableCard(
+                onTap: () => replayFirstInstallTutorial(context, ref),
                 child: ListTile(
                   leading: const Icon(Icons.explore_outlined, color: VmfsColors.primaryDark),
                   title: const Text('Replay app tour'),
@@ -81,7 +84,6 @@ class DashboardScreen extends ConsumerWidget {
                     'For Smart Combo setup, open a machine and tap ? in the top bar.',
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => replayFirstInstallTutorial(context, ref),
                 ),
               ),
               const SizedBox(height: 16),
@@ -127,18 +129,12 @@ class DashboardScreen extends ConsumerWidget {
                     value: '${stats.openTickets}',
                     icon: Icons.support_agent_outlined,
                     color: VmfsColors.warning,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(builder: (_) => const SupportScreen()),
-                    ),
-                  ),
+                    onTap: () => context.pushVmfsScreen(const SupportScreen())),
                   VmfsStatCard(
                     label: 'Wallet',
                     value: currency.format(stats.walletBalance),
                     icon: Icons.account_balance_wallet_outlined,
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(builder: (_) => const WalletScreen()),
-                    ),
-                  ),
+                    onTap: () => context.pushVmfsScreen(const WalletScreen())),
                 ],
               ),
             ],

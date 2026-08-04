@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/network/api_exception.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../auth/auth_provider.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -132,7 +133,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ],
           const SizedBox(height: 16),
-          FilledButton(onPressed: _loading ? null : _saveProfile, child: const Text('Save profile')),
+          VmfsFilledButton(onPressed: _loading ? null : _saveProfile, child: const Text('Save profile')),
           const Divider(height: 32),
           const Text('Change password', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           const SizedBox(height: 12),
@@ -154,7 +155,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             decoration: const InputDecoration(labelText: 'Confirm new password'),
           ),
           const SizedBox(height: 16),
-          OutlinedButton(onPressed: _loading ? null : _savePassword, child: const Text('Update password')),
+          VmfsOutlinedButton(onPressed: _loading ? null : _savePassword, child: const Text('Update password')),
         ],
       ),
     );

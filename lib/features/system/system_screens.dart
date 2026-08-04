@@ -8,6 +8,7 @@ import '../../core/widgets/vmfs_widgets.dart';
 import '../auth/auth_provider.dart';
 import 'age_verification_session_detail_screen.dart';
 import 'age_verification_utils.dart';
+import '../../core/router/vmfs_page_transitions.dart';
 
 final ageVerificationSessionsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   return ref.read(repositoryProvider).fetchAgeVerificationSessions();
@@ -50,11 +51,7 @@ class AgeVerificationSessionsScreen extends ConsumerWidget {
       return;
     }
 
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => AgeVerificationSessionDetailScreen(sessionId: sessionId),
-      ),
-    );
+    context.pushVmfsScreen(AgeVerificationSessionDetailScreen(sessionId: sessionId));
   }
 
   @override

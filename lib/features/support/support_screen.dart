@@ -10,6 +10,8 @@ import '../auth/auth_provider.dart';
 import '../legal/help_screen.dart';
 import '../../models/support_ticket.dart';
 import 'support_utils.dart';
+import '../../core/router/vmfs_page_transitions.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 final supportLiveChatStatusProvider = FutureProvider<SupportLiveChatStatus>((ref) async {
   return ref.watch(repositoryProvider).fetchSupportLiveChatStatus();
@@ -74,16 +76,14 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
       appBar: AppBar(
         title: const Text('Support'),
         actions: [
-          IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const HelpScreen()),
-            ),
+          VmfsIconButton(
+            onPressed: () => context.pushVmfsScreen(const HelpScreen()),
             icon: const Icon(Icons.help_outline_rounded),
             tooltip: 'Help & FAQ',
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: VmfsFloatingActionButton.extended(
         onPressed: () => context.push('/support/new'),
         backgroundColor: VmfsColors.primary,
         foregroundColor: Colors.white,
@@ -127,9 +127,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                   onMachineIssue: () => context.push('/support/new?issue_type=machine_issue'),
                   onPricingIssue: () => context.push('/support/new?issue_type=pricing_issue'),
                   onEmailSupport: () => _launch(Uri.parse('mailto:${LegalContent.supportEmail}')),
-                  onHelpFaq: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const HelpScreen()),
-                  ),
+                  onHelpFaq: () => context.pushVmfsScreen(const HelpScreen()),
                   onWebAdmin: () => _launch(Uri.parse('${LegalContent.websiteUrl}/admin')),
                 ),
                 const SizedBox(height: 20),
@@ -154,7 +152,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _query.isEmpty
                         ? null
-                        : IconButton(
+                        : VmfsIconButton(
                             onPressed: () => setState(() => _query = ''),
                             icon: const Icon(Icons.close),
                           ),
@@ -186,7 +184,7 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                         ? 'Choose an option above or create a ticket when a machine needs help.'
                         : 'Try another filter or search term.',
                     action: items.isEmpty
-                        ? ElevatedButton(
+                        ? VmfsElevatedButton(
                             onPressed: () => context.push('/support/new'),
                             child: const Text('Create first ticket'),
                           )

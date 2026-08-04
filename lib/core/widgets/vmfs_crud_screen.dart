@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../network/api_exception.dart';
+import 'vmfs_interactive.dart';
 import 'vmfs_resource_list.dart';
 import 'vmfs_widgets.dart';
 
@@ -96,7 +97,7 @@ class _VmfsCrudScreenState extends ConsumerState<VmfsCrudScreen> {
                         const SizedBox(height: 8),
                       ],
                       const SizedBox(height: 8),
-                      FilledButton(
+                      VmfsFilledButton(
                         onPressed: () async {
                           for (final field in widget.fields) {
                             if (field.required && (values[field.key]?.toString().trim().isEmpty ?? true)) {
@@ -143,8 +144,8 @@ class _VmfsCrudScreenState extends ConsumerState<VmfsCrudScreen> {
         title: const Text('Delete?'),
         content: const Text('This action cannot be undone.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+          VmfsTextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          VmfsFilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
         ],
       ),
     );
@@ -169,7 +170,7 @@ class _VmfsCrudScreenState extends ConsumerState<VmfsCrudScreen> {
         title: Text(widget.title),
         actions: [
           if (widget.canManage)
-            IconButton(
+            VmfsIconButton(
               tooltip: 'Add',
               onPressed: () => _openForm(),
               icon: const Icon(Icons.add),
@@ -186,13 +187,13 @@ class _VmfsCrudScreenState extends ConsumerState<VmfsCrudScreen> {
           list: list,
           onRefresh: () async => ref.invalidate(widget.provider),
           emptyTitle: widget.emptyTitle,
-          itemBuilder: (item) => Card(
+          itemBuilder: (item) => VmfsTappableCard(
+            onTap: widget.canManage ? () => _openForm(item: item) : null,
+            onLongPress: widget.canManage ? () => _confirmDelete(item['id'] as int) : null,
             child: ListTile(
               title: Text(widget.itemTitle(item)),
               subtitle: Text(widget.itemSubtitle(item)),
               trailing: widget.itemTrailing != null ? Text(widget.itemTrailing!(item) ?? '') : null,
-              onTap: widget.canManage ? () => _openForm(item: item) : null,
-              onLongPress: widget.canManage ? () => _confirmDelete(item['id'] as int) : null,
             ),
           ),
         ),

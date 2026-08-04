@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../onboarding/tutorial_step.dart';
 import '../theme/vmfs_colors.dart';
+import 'vmfs_interactive.dart';
 
 Future<void> showVmfsTutorialSheet(
   BuildContext context, {
@@ -116,7 +117,7 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
                   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: VmfsColors.primaryDark),
                 ),
               ),
-              TextButton(onPressed: () => _finish(skipped: true), child: const Text('Skip tour')),
+              VmfsTextButton(onPressed: () => _finish(skipped: true), child: const Text('Skip tour')),
             ],
           ),
           SizedBox(
@@ -189,7 +190,7 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
+                child: VmfsOutlinedButton(
                   onPressed: isFirst ? null : _previous,
                   child: const Text('Previous'),
                 ),
@@ -197,7 +198,7 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
               const SizedBox(width: 12),
               Expanded(
                 flex: 2,
-                child: FilledButton(
+                child: VmfsFilledButton(
                   onPressed: _next,
                   child: Text(isLast ? 'Finish tour' : 'Next'),
                 ),

@@ -6,6 +6,7 @@ import '../../core/theme/vmfs_colors.dart';
 import '../auth/auth_provider.dart';
 import 'team_screen.dart';
 import 'team_utils.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class TeamMemberFormScreen extends ConsumerStatefulWidget {
   const TeamMemberFormScreen({super.key, this.member});
@@ -122,8 +123,8 @@ class _TeamMemberFormScreenState extends ConsumerState<TeamMemberFormScreen> {
           'This permanently removes ${_nameController.text.trim()} from your account.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Remove')),
+          VmfsTextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          VmfsFilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Remove')),
         ],
       ),
     );
@@ -269,13 +270,13 @@ class _TeamMemberFormScreenState extends ConsumerState<TeamMemberFormScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            FilledButton(
+            VmfsFilledButton(
               onPressed: _loading ? null : _submit,
               child: Text(widget.isEditing ? 'Save changes' : 'Create team member'),
             ),
             if (widget.isEditing) ...[
               const SizedBox(height: 12),
-              OutlinedButton(
+              VmfsOutlinedButton(
                 onPressed: _loading ? null : _delete,
                 child: const Text('Remove team member'),
               ),

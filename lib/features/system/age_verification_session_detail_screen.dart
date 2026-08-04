@@ -8,6 +8,7 @@ import '../../core/widgets/vmfs_widgets.dart';
 import '../auth/auth_provider.dart';
 import 'age_verification_utils.dart';
 import 'system_screens.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class AgeVerificationSessionDetailScreen extends ConsumerStatefulWidget {
   const AgeVerificationSessionDetailScreen({super.key, required this.sessionId});
@@ -102,8 +103,8 @@ class _AgeVerificationSessionDetailScreenState extends ConsumerState<AgeVerifica
             maxLines: 2,
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            FilledButton(
+            VmfsTextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+            VmfsFilledButton(
               onPressed: () => Navigator.pop(ctx, controller.text.trim()),
               child: Text(isRevoke ? 'Revoke' : 'Reject'),
             ),
@@ -217,7 +218,7 @@ class _AgeVerificationSessionDetailScreenState extends ConsumerState<AgeVerifica
                               style: TextStyle(color: VmfsColors.textSecondary, fontSize: 13),
                             ),
                             const SizedBox(height: 12),
-                            FilledButton.icon(
+                            VmfsFilledButton.icon(
                               onPressed: _acting ? null : _approve,
                               icon: const Icon(Icons.verified_user_outlined),
                               label: const Text('Approve verification'),

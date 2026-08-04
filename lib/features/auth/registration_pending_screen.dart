@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/vmfs_colors.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class RegistrationPendingScreen extends StatelessWidget {
   const RegistrationPendingScreen({super.key, required this.email});
@@ -38,7 +39,7 @@ class RegistrationPendingScreen extends StatelessWidget {
                 style: TextStyle(color: VmfsColors.textSecondary, height: 1.5),
               ),
               const Spacer(),
-              FilledButton(
+              VmfsFilledButton(
                 onPressed: () => context.go('/login'),
                 child: const Text('Back to sign in'),
               ),

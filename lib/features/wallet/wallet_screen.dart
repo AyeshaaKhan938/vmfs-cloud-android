@@ -6,6 +6,7 @@ import '../../core/network/api_exception.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../data/vmfs_repository.dart';
 import '../auth/auth_provider.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 final walletDetailProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   return ref.watch(repositoryProvider).fetchWallet();
@@ -30,8 +31,8 @@ class WalletScreen extends ConsumerWidget {
           decoration: const InputDecoration(labelText: 'Amount (min \$100)'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(
+          VmfsTextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          VmfsFilledButton(
             onPressed: () => Navigator.pop(ctx, double.tryParse(controller.text.trim())),
             child: const Text('Submit'),
           ),
@@ -67,7 +68,7 @@ class WalletScreen extends ConsumerWidget {
         title: const Text('Wallet'),
         actions: [
           if (canRecharge)
-            IconButton(
+            VmfsIconButton(
               tooltip: 'Top up',
               onPressed: () => _recharge(context, ref),
               icon: const Icon(Icons.add_card_outlined),

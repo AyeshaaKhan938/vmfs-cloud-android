@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../network/api_exception.dart';
+import 'vmfs_interactive.dart';
 
 Future<bool> showMachineBulkEditSheet(
   BuildContext context, {
@@ -141,7 +142,7 @@ Future<bool> showBulkEditSheet(
                         ),
                     ],
                     const SizedBox(height: 12),
-                    FilledButton(
+                    VmfsFilledButton(
                       onPressed: () async {
                         if (selectedKeys.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(

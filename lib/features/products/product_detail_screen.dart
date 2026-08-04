@@ -8,6 +8,7 @@ import '../../core/widgets/vmfs_widgets.dart';
 import '../../data/vmfs_repository.dart';
 import '../../models/product.dart';
 import '../auth/auth_provider.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 final productDetailProvider = FutureProvider.family<ProductDetail, int>((ref, id) async {
   return ref.watch(repositoryProvider).fetchProduct(id);
@@ -29,7 +30,7 @@ class ProductDetailScreen extends ConsumerWidget {
         title: const Text('Product'),
         actions: [
           if (canEdit)
-            IconButton(
+            VmfsIconButton(
               tooltip: 'Edit product',
               onPressed: () async {
                 final changed = await context.push<bool>('/products/$productId/edit');

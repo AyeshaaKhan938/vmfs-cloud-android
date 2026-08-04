@@ -6,6 +6,7 @@ import '../../core/network/api_exception.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../../models/product.dart';
 import '../auth/auth_provider.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class MachineSlotFormScreen extends ConsumerStatefulWidget {
   const MachineSlotFormScreen({
@@ -135,8 +136,8 @@ class _MachineSlotFormScreenState extends ConsumerState<MachineSlotFormScreen> {
         title: const Text('Delete slot?'),
         content: const Text('This removes the slot from the machine.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+          VmfsTextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          VmfsFilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
         ],
       ),
     );
@@ -231,13 +232,13 @@ class _MachineSlotFormScreenState extends ConsumerState<MachineSlotFormScreen> {
               onChanged: (v) => setState(() => _isFault = v),
             ),
             const SizedBox(height: 24),
-            FilledButton(
+            VmfsFilledButton(
               onPressed: _loading ? null : _submit,
               child: Text(widget.isEditing ? 'Save slot' : 'Create slot'),
             ),
             if (widget.isEditing) ...[
               const SizedBox(height: 12),
-              OutlinedButton(
+              VmfsOutlinedButton(
                 onPressed: _loading ? null : _delete,
                 child: const Text('Delete slot'),
               ),

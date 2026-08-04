@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/legal/legal_content.dart';
+import '../../core/router/vmfs_page_transitions.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_tap.dart';
 import '../../core/widgets/vmfs_widgets.dart';
@@ -47,9 +48,7 @@ class MenuHubScreen extends ConsumerWidget {
                 icon: Icons.bar_chart_rounded,
                 title: 'Sales & profit',
                 subtitle: '30-day business summary',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const ReportsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const ReportsScreen()),
               ),
             ],
           ),
@@ -62,46 +61,34 @@ class MenuHubScreen extends ConsumerWidget {
                 icon: Icons.map_outlined,
                 title: 'Machine map',
                 subtitle: 'Locations with coordinates',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const MachineMapScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const MachineMapScreen()),
               ),
               _MenuTile(
                 icon: Icons.folder_copy_outlined,
                 title: 'Machine groups',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const MachineGroupsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const MachineGroupsScreen()),
               ),
               _MenuTile(
                 icon: Icons.warning_amber_outlined,
                 title: 'Alarms',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const MachineAlarmsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const MachineAlarmsScreen()),
               ),
               if (user?.hasFullAccess == true)
                 _MenuTile(
                   icon: Icons.verified_user_outlined,
                   title: 'Age verification',
                   subtitle: 'Review ID sessions (admin)',
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(builder: (_) => const AgeVerificationSessionsScreen()),
-                  ),
+                  onTap: () => context.pushVmfsScreen(const AgeVerificationSessionsScreen()),
                 ),
               _MenuTile(
                 icon: Icons.account_balance_outlined,
                 title: 'Finance groups',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const FinanceGroupsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const FinanceGroupsScreen()),
               ),
               _MenuTile(
                 icon: Icons.label_outline,
                 title: 'Label groups',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const LabelGroupsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const LabelGroupsScreen()),
               ),
             ],
           ),
@@ -113,37 +100,27 @@ class MenuHubScreen extends ConsumerWidget {
               _MenuTile(
                 icon: Icons.category_outlined,
                 title: 'Categories',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const ProductCategoriesScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const ProductCategoriesScreen()),
               ),
               _MenuTile(
                 icon: Icons.local_offer_outlined,
                 title: 'Product tags',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const ProductTagsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const ProductTagsScreen()),
               ),
               _MenuTile(
                 icon: Icons.style_outlined,
                 title: 'Product types',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const ProductTypesScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const ProductTypesScreen()),
               ),
               _MenuTile(
                 icon: Icons.confirmation_number_outlined,
                 title: 'Coupons',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const CouponsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const CouponsScreen()),
               ),
               _MenuTile(
                 icon: Icons.casino_outlined,
                 title: 'Lotteries',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const LotteriesScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const LotteriesScreen()),
               ),
             ],
           ),
@@ -155,23 +132,17 @@ class MenuHubScreen extends ConsumerWidget {
               _MenuTile(
                 icon: Icons.campaign_outlined,
                 title: 'Advertisements',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const AdvertisementsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const AdvertisementsScreen()),
               ),
               _MenuTile(
                 icon: Icons.collections_outlined,
                 title: 'Advertisement groups',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const AdvertisementGroupsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const AdvertisementGroupsScreen()),
               ),
               _MenuTile(
                 icon: Icons.label_outline,
                 title: 'Advertisement tags',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const AdvertisementTagsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const AdvertisementTagsScreen()),
               ),
             ],
           ),
@@ -183,9 +154,7 @@ class MenuHubScreen extends ConsumerWidget {
               _MenuTile(
                 icon: Icons.receipt_long_outlined,
                 title: 'Refund records',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const RefundRecordsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const RefundRecordsScreen()),
               ),
             ],
           ),
@@ -198,25 +167,19 @@ class MenuHubScreen extends ConsumerWidget {
                 icon: Icons.account_balance_wallet_outlined,
                 title: 'Wallet overview',
                 subtitle: currency.format(user?.walletBalance ?? 0),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const WalletScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const WalletScreen()),
               ),
               _MenuTile(
                 icon: Icons.payments_outlined,
                 title: 'Payment gateways',
                 subtitle: 'Collection account configuration status',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const PaymentGatewaysScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const PaymentGatewaysScreen()),
               ),
               _MenuTile(
                 icon: Icons.autorenew_outlined,
                 title: 'Renewal center',
                 subtitle: 'Equipment renewals and history',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const RenewalCenterScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const RenewalCenterScreen()),
               ),
             ],
           ),
@@ -228,30 +191,22 @@ class MenuHubScreen extends ConsumerWidget {
               _MenuTile(
                 icon: Icons.notifications_active_outlined,
                 title: 'Push records',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const PushRecordsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const PushRecordsScreen()),
               ),
               _MenuTile(
                 icon: Icons.storage_outlined,
                 title: 'Information storage',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const InformationStorageScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const InformationStorageScreen()),
               ),
               _MenuTile(
                 icon: Icons.groups_outlined,
                 title: 'Platform users',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const AdminUsersScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const AdminUsersScreen()),
               ),
               _MenuTile(
                 icon: Icons.palette_outlined,
                 title: 'Brand settings',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const BrandSettingsScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const BrandSettingsScreen()),
               ),
             ],
           ),
@@ -262,16 +217,12 @@ class MenuHubScreen extends ConsumerWidget {
             _MenuTile(
               icon: Icons.person_outline,
               title: 'Profile & password',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const ProfileScreen()),
-              ),
+              onTap: () => context.pushVmfsScreen(const ProfileScreen()),
             ),
             _MenuTile(
               icon: Icons.groups_outlined,
               title: 'Team members',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const TeamScreen()),
-              ),
+              onTap: () => context.pushVmfsScreen(const TeamScreen()),
             ),
             ListTile(
               leading: const Icon(Icons.badge_outlined),
@@ -300,49 +251,35 @@ class MenuHubScreen extends ConsumerWidget {
                 icon: Icons.support_agent_rounded,
                 title: 'Support tickets',
                 subtitle: 'Track issues, chat with VMFS support',
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const SupportScreen()),
-                ),
+                onTap: () => context.pushVmfsScreen(const SupportScreen()),
               ),
             _MenuTile(
               icon: Icons.help_outline,
               title: 'Help & FAQ',
               subtitle: 'Connection tips and support contacts',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const HelpScreen()),
-              ),
+              onTap: () => context.pushVmfsScreen(const HelpScreen()),
             ),
             _MenuTile(
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy policy',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const LegalDocumentScreen(
+              onTap: () => context.pushVmfsScreen(const LegalDocumentScreen(
                     title: 'Privacy policy',
                     body: LegalContent.privacyPolicy,
-                  ),
-                ),
-              ),
+                  )),
             ),
             _MenuTile(
               icon: Icons.description_outlined,
               title: 'Terms of service',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const LegalDocumentScreen(
+              onTap: () => context.pushVmfsScreen(const LegalDocumentScreen(
                     title: 'Terms of service',
                     body: LegalContent.termsOfService,
-                  ),
-                ),
-              ),
+                  )),
             ),
             _MenuTile(
               icon: Icons.info_outline,
               title: 'About',
               subtitle: 'App version and publisher',
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const AboutScreen()),
-              ),
+              onTap: () => context.pushVmfsScreen(const AboutScreen()),
             ),
           ],
         ),

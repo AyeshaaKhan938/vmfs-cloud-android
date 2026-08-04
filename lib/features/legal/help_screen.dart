@@ -4,6 +4,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/legal/legal_content.dart';
 import '../../core/theme/vmfs_colors.dart';
 import 'legal_document_screen.dart';
+import '../../core/router/vmfs_page_transitions.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class HelpScreen extends StatelessWidget {
   const HelpScreen({super.key});
@@ -64,15 +66,11 @@ class HelpScreen extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 8),
-          OutlinedButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const LegalDocumentScreen(
+          VmfsOutlinedButton(
+            onPressed: () => context.pushVmfsScreen(const LegalDocumentScreen(
                   title: 'Privacy policy',
                   body: LegalContent.privacyPolicy,
-                ),
-              ),
-            ),
+                )),
             child: const Text('Read privacy policy'),
           ),
         ],

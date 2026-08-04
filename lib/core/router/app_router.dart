@@ -16,6 +16,7 @@ import '../../features/products/product_form_screen.dart';
 import '../../features/shell/app_shell.dart';
 import '../../features/support/support_ticket_detail_screen.dart';
 import '../../features/support/support_ticket_form_screen.dart';
+import 'vmfs_page_transitions.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final refresh = _AuthRefreshListenable(ref);
@@ -52,68 +53,93 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
+      _vmfsRoute(
         path: '/loading',
+        kind: VmfsTransitionKind.fade,
         builder: (_, __) => const Scaffold(body: VmfsLoadingView()),
       ),
-      GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
-      GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
-      GoRoute(
+      _vmfsRoute(
+        path: '/login',
+        kind: VmfsTransitionKind.fade,
+        builder: (_, __) => const LoginScreen(),
+      ),
+      _vmfsRoute(
+        path: '/register',
+        kind: VmfsTransitionKind.fade,
+        builder: (_, __) => const RegisterScreen(),
+      ),
+      _vmfsRoute(
         path: '/register/pending',
+        kind: VmfsTransitionKind.fade,
         builder: (_, state) => RegistrationPendingScreen(
           email: state.extra as String? ?? '',
         ),
       ),
-      GoRoute(path: '/', builder: (_, __) => const AppShell()),
-      GoRoute(path: '/machines/new', builder: (_, __) => const MachineFormScreen()),
-      GoRoute(
+      _vmfsRoute(path: '/', builder: (_, __) => const AppShell()),
+      _vmfsRoute(path: '/machines/new', builder: (_, __) => const MachineFormScreen()),
+      _vmfsRoute(
         path: '/machines/:id/edit',
         builder: (_, state) => MachineFormScreen(machineId: int.parse(state.pathParameters['id']!)),
       ),
-      GoRoute(
+      _vmfsRoute(
         path: '/machines/:id',
         builder: (_, state) => MachineDetailScreen(
           machineId: int.parse(state.pathParameters['id']!),
           showOnboardingOnOpen: state.uri.queryParameters['onboarding'] == '1',
         ),
       ),
-      GoRoute(
+      _vmfsRoute(
         path: '/machines/:id/slots/new',
         builder: (_, state) => MachineSlotFormScreen(machineId: int.parse(state.pathParameters['id']!)),
       ),
-      GoRoute(
+      _vmfsRoute(
         path: '/machines/:machineId/slots/:slotId/edit',
         builder: (_, state) => MachineSlotFormScreen(
           machineId: int.parse(state.pathParameters['machineId']!),
           slotId: int.parse(state.pathParameters['slotId']!),
         ),
       ),
-      GoRoute(path: '/products/new', builder: (_, __) => const ProductFormScreen()),
-      GoRoute(
+      _vmfsRoute(path: '/products/new', builder: (_, __) => const ProductFormScreen()),
+      _vmfsRoute(
         path: '/products/:id/edit',
         builder: (_, state) => ProductFormScreen(productId: int.parse(state.pathParameters['id']!)),
       ),
-      GoRoute(
+      _vmfsRoute(
         path: '/products/:id',
         builder: (_, state) => ProductDetailScreen(productId: int.parse(state.pathParameters['id']!)),
       ),
-      GoRoute(
+      _vmfsRoute(
         path: '/orders/:id',
         builder: (_, state) => OrderDetailScreen(orderId: int.parse(state.pathParameters['id']!)),
       ),
-      GoRoute(
+      _vmfsRoute(
         path: '/support/new',
         builder: (_, state) => SupportTicketFormScreen(
           initialIssueType: state.uri.queryParameters['issue_type'],
         ),
       ),
-      GoRoute(
+      _vmfsRoute(
         path: '/support/:id',
         builder: (_, state) => SupportTicketDetailScreen(ticketId: int.parse(state.pathParameters['id']!)),
       ),
     ],
   );
 });
+
+GoRoute _vmfsRoute({
+  required String path,
+  required Widget Function(BuildContext, GoRouterState) builder,
+  VmfsTransitionKind kind = VmfsTransitionKind.slide,
+}) {
+  return GoRoute(
+    path: path,
+    pageBuilder: (context, state) => buildVmfsPage(
+      key: state.pageKey,
+      child: builder(context, state),
+      kind: kind,
+    ),
+  );
+}
 
 class _AuthRefreshListenable extends ChangeNotifier {
   _AuthRefreshListenable(this.ref) {

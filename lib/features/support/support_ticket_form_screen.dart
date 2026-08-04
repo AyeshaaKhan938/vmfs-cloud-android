@@ -9,6 +9,7 @@ import '../auth/auth_provider.dart';
 import '../../models/machine.dart';
 import 'support_screen.dart';
 import 'support_utils.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 final machinesForSupportFormProvider = FutureProvider<List<MachineSummary>>((ref) async {
   return ref.watch(repositoryProvider).fetchMachines();
@@ -168,7 +169,7 @@ class _SupportTicketFormScreenState extends ConsumerState<SupportTicketFormScree
             return VmfsEmptyState(
               title: 'No machines yet',
               message: 'Register a vending machine first, then you can open a support ticket for it.',
-              action: OutlinedButton(
+              action: VmfsOutlinedButton(
                 onPressed: () => context.go('/machines/new'),
                 child: const Text('Add machine'),
               ),

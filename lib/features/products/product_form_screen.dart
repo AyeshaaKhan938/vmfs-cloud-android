@@ -6,6 +6,7 @@ import '../../core/network/api_exception.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../auth/auth_provider.dart';
 import '../products/products_screen.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 class ProductFormScreen extends ConsumerStatefulWidget {
   const ProductFormScreen({super.key, this.productId});
@@ -139,8 +140,8 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         title: const Text('Delete product?'),
         content: const Text('This permanently removes the product from your catalog.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
+          VmfsTextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          VmfsFilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete')),
         ],
       ),
     );
@@ -242,13 +243,13 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
               onChanged: (v) => setState(() => _ageVerification = v),
             ),
             const SizedBox(height: 24),
-            FilledButton(
+            VmfsFilledButton(
               onPressed: _loading ? null : _submit,
               child: Text(widget.isEditing ? 'Save product' : 'Create product'),
             ),
             if (widget.isEditing) ...[
               const SizedBox(height: 12),
-              OutlinedButton(
+              VmfsOutlinedButton(
                 onPressed: _loading ? null : _delete,
                 child: const Text('Delete product'),
               ),

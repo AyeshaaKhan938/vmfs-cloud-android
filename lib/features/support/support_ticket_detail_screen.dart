@@ -11,6 +11,7 @@ import '../auth/auth_provider.dart';
 import '../../models/support_ticket.dart';
 import 'support_screen.dart';
 import 'support_utils.dart';
+import '../../core/widgets/vmfs_interactive.dart';
 
 final supportTicketDetailProvider = FutureProvider.family<SupportTicketDetail, int>((ref, id) async {
   return ref.watch(repositoryProvider).fetchSupportTicket(id);
@@ -144,8 +145,8 @@ class _SupportTicketDetailScreenState extends ConsumerState<SupportTicketDetailS
           'Cancel ${ticket.workOrderNumber}? This removes the ticket from the open queue.',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep')),
-          ElevatedButton(
+          VmfsTextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep')),
+          VmfsElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: VmfsColors.danger),
             child: const Text('Cancel ticket'),
@@ -189,7 +190,7 @@ class _SupportTicketDetailScreenState extends ConsumerState<SupportTicketDetailS
                 child: VmfsStatusPill(label: 'Live', color: VmfsColors.success),
               ),
             ),
-          IconButton(
+          VmfsIconButton(
             onPressed: () {
               ref.invalidate(supportTicketDetailProvider(widget.ticketId));
               ref.invalidate(supportLiveChatStatusProvider);
@@ -421,7 +422,7 @@ class _SupportTicketDetailScreenState extends ConsumerState<SupportTicketDetailS
                           ),
                         ),
                         const SizedBox(width: 8),
-                        IconButton.filled(
+                        VmfsIconButton.filled(
                           onPressed: _sending ? null : _sendMessage,
                           tooltip: 'Send message',
                           icon: _sending

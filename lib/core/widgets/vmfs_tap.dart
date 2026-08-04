@@ -26,23 +26,24 @@ class VmfsTap extends StatefulWidget {
 class _VmfsTapState extends State<VmfsTap> {
   bool _pressed = false;
 
-  Future<void> _handleTap() async {
+  void _handleTap() {
     if (!widget.enabled || widget.onTap == null) {
       return;
     }
 
-    if (widget.primaryFeedback) {
-      await VmfsTapFeedback.playPrimary();
-    } else {
-      await VmfsTapFeedback.play();
-    }
-
     widget.onTap!();
+
+    if (widget.primaryFeedback) {
+      VmfsTapFeedback.playPrimary();
+    } else {
+      VmfsTapFeedback.play();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTapDown: widget.enabled && widget.onTap != null
           ? (_) => setState(() => _pressed = true)
           : null,
