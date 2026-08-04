@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/network/api_exception.dart';
-import '../../core/onboarding/app_onboarding.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../auth/auth_provider.dart';
 
@@ -156,25 +155,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           const SizedBox(height: 16),
           OutlinedButton(onPressed: _loading ? null : _savePassword, child: const Text('Update password')),
-          const Divider(height: 32),
-          const Text('Help & guides', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: const Icon(Icons.explore_outlined, color: VmfsColors.primaryDark),
-            title: const Text('Replay app tour'),
-            subtitle: const Text('Walk through Dashboard, Machines, Products, and More tabs again'),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: _loading
-                ? null
-                : () async {
-                    await replayFirstInstallTutorial(context, ref);
-                  },
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'For Smart Combo physical setup (unboxing, trays, first vend), open a machine and tap the help icon in the top bar.',
-            style: TextStyle(color: VmfsColors.textSecondary, fontSize: 13, height: 1.4),
-          ),
         ],
       ),
     );

@@ -9,6 +9,7 @@ class AuthUser {
     required this.isEnabled,
     required this.features,
     required this.hasFullAccess,
+    required this.canManageTeamMembers,
     this.walletBalance,
     this.timezone,
     this.cloudNotificationEmail,
@@ -28,6 +29,7 @@ class AuthUser {
           .map((e) => e.toString())
           .toList(),
       hasFullAccess: json['has_full_access'] as bool? ?? false,
+      canManageTeamMembers: json['can_manage_team_members'] as bool? ?? false,
       walletBalance: (json['wallet_balance'] as num?)?.toDouble(),
       timezone: json['timezone'] as String?,
       cloudNotificationEmail: json['cloud_notification_email'] as String?,
@@ -44,6 +46,7 @@ class AuthUser {
   final bool isEnabled;
   final List<String> features;
   final bool hasFullAccess;
+  final bool canManageTeamMembers;
   final double? walletBalance;
   final String? timezone;
   final String? cloudNotificationEmail;

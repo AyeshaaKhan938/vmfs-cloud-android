@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 import '../../core/widgets/vmfs_resource_list.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_widgets.dart';
-import '../../data/vmfs_repository.dart';
 import '../auth/auth_provider.dart';
+import 'age_verification_session_detail_screen.dart';
+import 'age_verification_utils.dart';
 
 final ageVerificationSessionsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   return ref.read(repositoryProvider).fetchAgeVerificationSessions();
@@ -43,6 +44,19 @@ final adminUsersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asyn
 class AgeVerificationSessionsScreen extends ConsumerWidget {
   const AgeVerificationSessionsScreen({super.key});
 
+  void _openSession(BuildContext context, Map<String, dynamic> item) {
+    final sessionId = item['session_id'] as String?;
+    if (sessionId == null || sessionId.isEmpty) {
+      return;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => AgeVerificationSessionDetailScreen(sessionId: sessionId),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sessions = ref.watch(ageVerificationSessionsProvider);
@@ -56,16 +70,24 @@ class AgeVerificationSessionsScreen extends ConsumerWidget {
           list: list,
           onRefresh: () async => ref.invalidate(ageVerificationSessionsProvider),
           emptyTitle: 'No verification sessions',
-          itemBuilder: (item) => Card(
-            child: ListTile(
-              title: Text('Machine ${item['machine_no'] ?? '—'}'),
-              subtitle: Text('${item['status_label'] ?? item['status']} · ${item['message'] ?? ''}'),
-              trailing: VmfsStatusPill(
-                label: item['age_verified'] == true ? 'Verified' : 'Pending',
-                color: item['age_verified'] == true ? VmfsColors.success : VmfsColors.warning,
+          emptyMessage: 'Sessions appear here when customers start age verification at your machines.',
+          itemBuilder: (item) {
+            final status = item['status'] as String?;
+            return Card(
+              child: ListTile(
+                title: Text('Machine ${item['machine_no'] ?? '—'}'),
+                subtitle: Text(
+                  '${ageVerificationStatusLabel(item)} · ${item['message'] ?? 'Tap to review'}',
+                ),
+                isThreeLine: true,
+                trailing: VmfsStatusPill(
+                  label: ageVerificationStatusLabel(item),
+                  color: ageVerificationStatusColor(status),
+                ),
+                onTap: () => _openSession(context, item),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );

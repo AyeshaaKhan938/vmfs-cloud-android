@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/network/api_exception.dart';
+import '../../core/onboarding/app_onboarding.dart';
 import '../../core/theme/vmfs_colors.dart';
 import '../../core/widgets/vmfs_logo.dart';
 import '../../core/widgets/vmfs_widgets.dart';
@@ -69,6 +70,19 @@ class DashboardScreen extends ConsumerWidget {
                 subtitle: '${stats.roleLabel} · ${DateFormat('EEEE, MMM d').format(DateTime.now())}',
                 trailing: Chip(label: Text(stats.roleLabel)),
                 leading: const VmfsLogo(height: 44, compact: true),
+              ),
+              const SizedBox(height: 12),
+              Card(
+                child: ListTile(
+                  leading: const Icon(Icons.explore_outlined, color: VmfsColors.primaryDark),
+                  title: const Text('Replay app tour'),
+                  subtitle: const Text(
+                    'Walk through Dashboard, Machines, Products, and More. '
+                    'For Smart Combo setup, open a machine and tap ? in the top bar.',
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => replayFirstInstallTutorial(context, ref),
+                ),
               ),
               const SizedBox(height: 16),
               GridView.count(

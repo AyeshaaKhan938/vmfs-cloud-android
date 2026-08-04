@@ -87,6 +87,18 @@ class ApiClient {
     }
   }
 
+  Future<List<int>> getBytes(String path) async {
+    try {
+      final response = await _dio.get<List<int>>(
+        _normalizePath(path),
+        options: Options(responseType: ResponseType.bytes),
+      );
+      return response.data ?? <int>[];
+    } on DioException catch (e) {
+      throw _mapError(e);
+    }
+  }
+
   Future<Map<String, dynamic>> post(String path, {Map<String, dynamic>? body}) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(_normalizePath(path), data: body);

@@ -389,6 +389,31 @@ class VmfsRepository {
     return _mapList(data['sessions']);
   }
 
+  Future<Map<String, dynamic>> fetchAgeVerificationSession(String sessionId) async {
+    final data = await _api.get('/system/age-verification-sessions/$sessionId');
+    return Map<String, dynamic>.from(data['session'] as Map);
+  }
+
+  Future<List<int>> fetchAgeVerificationDocument(String sessionId) {
+    return _api.getBytes('/system/age-verification-sessions/$sessionId/document');
+  }
+
+  Future<Map<String, dynamic>> approveAgeVerificationSession(String sessionId, {String? message}) async {
+    final data = await _api.post(
+      '/system/age-verification-sessions/$sessionId/approve',
+      body: message == null ? null : {'message': message},
+    );
+    return Map<String, dynamic>.from(data['session'] as Map);
+  }
+
+  Future<Map<String, dynamic>> rejectAgeVerificationSession(String sessionId, {String? message}) async {
+    final data = await _api.post(
+      '/system/age-verification-sessions/$sessionId/reject',
+      body: message == null ? null : {'message': message},
+    );
+    return Map<String, dynamic>.from(data['session'] as Map);
+  }
+
   Future<List<Map<String, dynamic>>> fetchRefunds() async {
     final data = await _api.get('/system/refunds');
     return _mapList(data['refunds']);
