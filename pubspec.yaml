@@ -15,6 +15,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   intl: ^0.20.2
   url_launcher: ^6.3.1
+  audioplayers: ^6.4.0
 
 dev_dependencies:
   flutter_test:
@@ -34,3 +35,5 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/vmfs-logo.jpg
+    - assets/sounds/tap_click.wav
+    - assets/sounds/tap_primary.wav

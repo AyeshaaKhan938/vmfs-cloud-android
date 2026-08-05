@@ -171,20 +171,9 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
               },
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(widget.steps.length, (i) {
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: i == _index ? 18 : 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: i == _index ? VmfsColors.primaryDark : VmfsColors.primaryLight,
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              );
-            }),
+          _TutorialProgressIndicator(
+            stepCount: widget.steps.length,
+            currentIndex: _index,
           ),
           const SizedBox(height: 16),
           Row(
@@ -214,6 +203,50 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
             style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Dots for short tours; progress bar when many steps (avoids horizontal overflow).
+class _TutorialProgressIndicator extends StatelessWidget {
+  const _TutorialProgressIndicator({
+    required this.stepCount,
+    required this.currentIndex,
+  });
+
+  final int stepCount;
+  final int currentIndex;
+
+  static const int _maxDots = 8;
+
+  @override
+  Widget build(BuildContext context) {
+    if (stepCount <= _maxDots) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(stepCount, (i) {
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            width: i == currentIndex ? 18 : 8,
+            height: 8,
+            decoration: BoxDecoration(
+              color: i == currentIndex ? VmfsColors.primaryDark : VmfsColors.primaryLight,
+              borderRadius: BorderRadius.circular(999),
+            ),
+          );
+        }),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(999),
+      child: LinearProgressIndicator(
+        value: (currentIndex + 1) / stepCount,
+        minHeight: 6,
+        backgroundColor: VmfsColors.primaryLight,
+        color: VmfsColors.primaryDark,
       ),
     );
   }
