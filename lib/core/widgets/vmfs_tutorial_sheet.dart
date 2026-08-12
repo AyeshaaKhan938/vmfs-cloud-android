@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../onboarding/tutorial_step.dart';
 import '../theme/vmfs_colors.dart';
@@ -10,6 +11,8 @@ Future<void> showVmfsTutorialSheet(
   required List<TutorialStep> steps,
   required Future<void> Function() onFinished,
   void Function(TutorialStep step)? onStepVisible,
+  String? manualUrl,
+  String? manualLabel,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -24,6 +27,8 @@ Future<void> showVmfsTutorialSheet(
         steps: steps,
         onFinished: onFinished,
         onStepVisible: onStepVisible,
+        manualUrl: manualUrl,
+        manualLabel: manualLabel,
       );
     },
   );
@@ -35,12 +40,16 @@ class _VmfsTutorialSheet extends StatefulWidget {
     required this.steps,
     required this.onFinished,
     this.onStepVisible,
+    this.manualUrl,
+    this.manualLabel,
   });
 
   final String title;
   final List<TutorialStep> steps;
   final Future<void> Function() onFinished;
   final void Function(TutorialStep step)? onStepVisible;
+  final String? manualUrl;
+  final String? manualLabel;
 
   @override
   State<_VmfsTutorialSheet> createState() => _VmfsTutorialSheetState();
@@ -93,6 +102,18 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
     );
   }
 
+  Future<void> _openManual() async {
+    final url = widget.manualUrl;
+    if (url == null || url.isEmpty) return;
+
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication) && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open operator manual')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final step = widget.steps[_index];
@@ -117,6 +138,11 @@ class _VmfsTutorialSheetState extends State<_VmfsTutorialSheet> {
                   style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: VmfsColors.primaryDark),
                 ),
               ),
+              if (widget.manualUrl != null)
+                VmfsTextButton(
+                  onPressed: _openManual,
+                  child: Text(widget.manualLabel ?? 'Manual'),
+                ),
               VmfsTextButton(onPressed: () => _finish(skipped: true), child: const Text('Skip tour')),
             ],
           ),

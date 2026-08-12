@@ -1,5 +1,27 @@
 import 'package:flutter/material.dart';
 
+class MachineOnboardingPhase {
+  const MachineOnboardingPhase({
+    required this.key,
+    required this.label,
+    required this.stepNumbers,
+  });
+
+  factory MachineOnboardingPhase.fromJson(Map<String, dynamic> json) {
+    final numbers = json['step_numbers'] as List<dynamic>? ?? [];
+
+    return MachineOnboardingPhase(
+      key: json['key'] as String? ?? 'setup',
+      label: json['label'] as String? ?? 'Setup',
+      stepNumbers: numbers.map((n) => (n as num).toInt()).toList(),
+    );
+  }
+
+  final String key;
+  final String label;
+  final List<int> stepNumbers;
+}
+
 class MachineOnboardingProfile {
   const MachineOnboardingProfile({
     required this.profileKey,
@@ -7,16 +29,27 @@ class MachineOnboardingProfile {
     required this.label,
     required this.description,
     required this.steps,
+    this.manualUrl,
+    this.manualLabel,
+    this.stepCount,
+    this.phases = const [],
   });
 
   factory MachineOnboardingProfile.fromJson(Map<String, dynamic> json) {
     final stepsJson = json['steps'] as List<dynamic>? ?? [];
+    final phasesJson = json['phases'] as List<dynamic>? ?? [];
 
     return MachineOnboardingProfile(
       profileKey: json['profile_key'] as String? ?? 'standard_vending',
       machineNumber: json['machine_number'] as String? ?? '',
       label: json['label'] as String? ?? 'VMFS kiosk',
       description: json['description'] as String? ?? '',
+      manualUrl: json['manual_url'] as String?,
+      manualLabel: json['manual_label'] as String?,
+      stepCount: json['step_count'] as int? ?? stepsJson.length,
+      phases: phasesJson
+          .map((phase) => MachineOnboardingPhase.fromJson(phase as Map<String, dynamic>))
+          .toList(),
       steps: stepsJson
           .map((step) => MachineOnboardingStep.fromJson(step as Map<String, dynamic>))
           .toList(),
@@ -27,7 +60,13 @@ class MachineOnboardingProfile {
   final String machineNumber;
   final String label;
   final String description;
+  final String? manualUrl;
+  final String? manualLabel;
+  final int? stepCount;
+  final List<MachineOnboardingPhase> phases;
   final List<MachineOnboardingStep> steps;
+
+  bool get isSmartCombo => profileKey == 'smart_combo_vmfs';
 }
 
 class MachineOnboardingStep {
@@ -36,11 +75,13 @@ class MachineOnboardingStep {
     required this.body,
     required this.icon,
     this.kicker,
+    this.stepNumber,
   });
 
   factory MachineOnboardingStep.fromJson(Map<String, dynamic> json) {
     return MachineOnboardingStep(
       kicker: json['kicker'] as String?,
+      stepNumber: json['step_number'] as int?,
       title: json['title'] as String? ?? '',
       body: json['body'] as String? ?? '',
       icon: json['icon'] as String? ?? 'memory',
@@ -48,6 +89,7 @@ class MachineOnboardingStep {
   }
 
   final String? kicker;
+  final int? stepNumber;
   final String title;
   final String body;
   final String icon;

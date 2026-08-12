@@ -10,6 +10,7 @@ import '../../core/widgets/vmfs_interactive.dart';
 import '../../core/widgets/vmfs_widgets.dart';
 import '../auth/auth_provider.dart';
 import '../../models/machine.dart';
+import '../../models/machine_onboarding_profile.dart';
 
 final machinesProvider = FutureProvider.family<List<MachineSummary>, String>((ref, search) async {
   if (search.isEmpty) {
@@ -217,9 +218,20 @@ class MachineDetailScreen extends ConsumerStatefulWidget {
 class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
   bool _restocking = false;
   bool _onboardingQueued = false;
+  MachineOnboardingProfile? _setupProfile;
+
+  Future<MachineOnboardingProfile> _loadSetupProfile(MachineDetail machine) async {
+    if (_setupProfile != null && _setupProfile!.machineNumber == machine.machineNumber) {
+      return _setupProfile!;
+    }
+
+    final profile = await ref.read(repositoryProvider).fetchMachineOnboardingProfile(machine.machineNumber);
+    _setupProfile = profile;
+    return profile;
+  }
 
   Future<void> _runMachineOnboarding(MachineDetail machine, {bool force = false}) async {
-    final profile = await ref.read(repositoryProvider).fetchMachineOnboardingProfile(machine.machineNumber);
+    final profile = await _loadSetupProfile(machine);
     if (!mounted) return;
 
     await maybeShowMachineOnboarding(
@@ -327,6 +339,68 @@ class _MachineDetailScreenState extends ConsumerState<MachineDetailScreen> {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              FutureBuilder<MachineOnboardingProfile>(
+                future: _loadSetupProfile(machine),
+                builder: (context, snapshot) {
+                  final profile = snapshot.data;
+                  if (profile == null || profile.steps.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Card(
+                      color: VmfsColors.primaryLight.withValues(alpha: 0.35),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.menu_book_outlined, color: VmfsColors.primaryDark),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    profile.isSmartCombo ? 'Smart Combo setup guide' : 'Machine setup guide',
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              profile.description,
+                              style: const TextStyle(height: 1.4, color: Color(0xFF555555)),
+                            ),
+                            if (profile.phases.isNotEmpty) ...[
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: profile.phases
+                                    .map(
+                                      (phase) => Chip(
+                                        label: Text('${phase.label} (${phase.stepNumbers.length})'),
+                                        backgroundColor: Colors.white,
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                            const SizedBox(height: 12),
+                            FilledButton.icon(
+                              onPressed: () => _runMachineOnboarding(machine, force: true),
+                              icon: const Icon(Icons.play_arrow_rounded),
+                              label: Text('Start ${profile.stepCount ?? profile.steps.length}-step setup'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
               VmfsHeroBanner(
                 kicker: 'Machine overview',
                 title: machine.machineName,

@@ -39,6 +39,8 @@ Future<void> maybeShowMachineOnboarding({
     context,
     title: profile.label,
     steps: tutorialStepsFromProfile(profile),
+    manualUrl: profile.manualUrl,
+    manualLabel: profile.manualLabel,
     onFinished: () => storage.markMachineOnboardingCompleted(machineId, profile.profileKey),
   );
 }

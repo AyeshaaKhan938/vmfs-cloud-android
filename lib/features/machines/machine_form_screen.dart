@@ -185,12 +185,16 @@ class _MachineFormScreenState extends ConsumerState<MachineFormScreen> {
                 Card(
                   color: VmfsColors.primaryLight.withValues(alpha: 0.35),
                   child: ListTile(
-                    leading: const Icon(Icons.memory_rounded, color: VmfsColors.primaryDark),
+                    leading: const Icon(Icons.menu_book_outlined, color: VmfsColors.primaryDark),
                     title: Text(
                       _detectedProfile!.label,
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
-                    subtitle: Text(_detectedProfile!.description),
+                    subtitle: Text(
+                      '${_detectedProfile!.description}\n'
+                      '${_detectedProfile!.stepCount ?? _detectedProfile!.steps.length} guided steps after you save.',
+                    ),
+                    isThreeLine: true,
                   ),
                 ),
               ],
